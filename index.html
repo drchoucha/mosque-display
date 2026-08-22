@@ -63,13 +63,13 @@
     font-variant-numeric:tabular-nums; direction:ltr;}
   #countdownSub{font-size:clamp(1.2rem,2.3vh,1.5rem); color:var(--cream); opacity:0.65; margin-top:5px;}
 
-  #tickerWrap{position:fixed; bottom:0; right:0; left:0; z-index:15;
-    background:rgba(6,26,24,0.94); border-top:2px solid var(--gold);
-    padding:clamp(4px,0.9vh,8px) 0; overflow:hidden; white-space:nowrap; line-height:1.2;}
+  #tickerWrap{position:fixed; bottom:10px; right:0; left:0; z-index:15;
+    background:rgba(6,26,24,0.94); border-top:2px solid var(--gold); border-bottom:2px solid var(--gold);
+    padding:clamp(10px,2vh,20px) 0; overflow:hidden; white-space:nowrap; line-height:1.2;}
   #tickerTrack{display:inline-block; white-space:nowrap; direction:ltr;
     animation:marqueeScroll linear infinite; animation-duration:40s;}
   .tickerGroup{display:inline-block; white-space:nowrap;}
-  .tickerItemSpan{display:inline-block; padding:0 30px; font-size:clamp(1.55rem,3.3vh,2rem);
+  .tickerItemSpan{display:inline-block; padding:0 30px; font-size:clamp(1.9rem,4vh,2.6rem);
     color:var(--cream); direction:rtl;}
   .tickerItemSpan .cat{color:var(--gold-light); margin-left:10px; font-size:0.82em;}
   .tickerSep{display:inline-block; color:var(--gold); opacity:0.6; font-size:1rem;}
@@ -114,11 +114,45 @@
   #photoCaption{position:absolute; bottom:40px; right:0; left:0; z-index:2; text-align:center;
     font-size:1.6rem; color:var(--gold-light); text-shadow:0 2px 10px rgba(0,0,0,0.8);}
 
+  /* full-screen text slide mode (آية/حديث/نصيحة/إعلان) */
+  #textSlide{position:fixed; top:0; right:0; bottom:0; left:0; z-index:30; display:none;
+    background:radial-gradient(ellipse at 50% 30%, var(--bg-mid) 0%, var(--bg-deep) 55%, var(--bg-deep-night) 100%);
+    flex-direction:column; align-items:center; justify-content:center; padding:6vw; text-align:center;
+    transition:opacity 1.2s ease;}
+  #textSlide.show{display:flex;}
+  #textSlideCat{font-size:clamp(1.1rem,2.4vh,1.7rem); color:var(--gold); letter-spacing:2px; margin-bottom:22px;
+    border:1px solid var(--gold); border-radius:30px; padding:6px 26px; opacity:0.9;}
+  #textSlideTxt{font-size:clamp(1.6rem,4.6vh,3.1rem); color:var(--cream); line-height:1.7; font-weight:bold;
+    max-width:1400px; text-shadow:0 0 30px rgba(201,162,39,0.2);}
+  #textSlideSource{font-size:clamp(0.95rem,1.9vh,1.25rem); color:var(--gold-light); opacity:0.75; margin-top:26px; letter-spacing:1px;}
+  #textSlide .arabesqueBig{position:absolute; top:0; right:0; bottom:0; left:0; opacity:0.1; pointer-events:none;
+    background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='%23c9a227' stroke-width='1.1'%3E%3Ccircle cx='110' cy='110' r='58'/%3E%3Cpath d='M110 30 L140 80 L190 90 L155 125 L165 175 L110 150 L55 175 L65 125 L30 90 L80 80 Z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size:260px 260px;}
+
+  /* مظهر مميّز للآيات القرآنية المرتبطة بالمناسبات */
+  #textSlide.slide-ayah{background:radial-gradient(ellipse at 50% 25%, #0f2e2c 0%, #061a18 60%, #030d0c 100%);}
+  #textSlide.slide-ayah #textSlideTxt{position:relative; padding:0 50px; font-family:"Traditional Arabic","Amiri",serif;
+    font-size:clamp(1.9rem,5vh,3.6rem); color:var(--gold-light); font-weight:normal;
+    border-top:2px solid var(--gold); border-bottom:2px solid var(--gold); padding-top:24px; padding-bottom:24px;}
+  #textSlide.slide-ayah #textSlideTxt::before{content:"﴿"; position:absolute; right:-8px; top:10px; font-size:1.3em; color:var(--gold);}
+  #textSlide.slide-ayah #textSlideTxt::after{content:"﴾"; position:absolute; left:-8px; bottom:10px; font-size:1.3em; color:var(--gold);}
+  #textSlide.slide-ayah #textSlideCat{border-color:var(--teal-accent); background:rgba(27,94,86,0.25);}
+
+  /* مظهر مميّز للأحاديث النبوية المرتبطة بالمناسبات */
+  #textSlide.slide-hadith{background:radial-gradient(ellipse at 50% 25%, #1c1206 0%, #0e0a04 60%, #060402 100%);}
+  #textSlide.slide-hadith #textSlideCat{border-color:#c9a227;}
+  #textSlide.slide-hadith #textSlideTxt{color:var(--cream);}
+  #textSlide.slide-hadith #textSlideTxt::before{content:"📜 "; opacity:0.8;}
+
   /* admin gear */
   #gearBtn{position:fixed; bottom:16px; left:16px; z-index:90; width:52px; height:52px; border-radius:50%;
     background:rgba(201,162,39,0.15); border:1px solid var(--gold); color:var(--gold-light); font-size:1.5rem;
     cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:0.35; transition:opacity .3s;}
   #gearBtn:hover{opacity:1;}
+
+  #devCredit{position:absolute; bottom:78px; right:20px; z-index:25; font-size:0.85rem;
+    color:#fff; opacity:0.7; letter-spacing:0.5px; pointer-events:none;
+    background:rgba(0,0,0,0.25); padding:3px 10px; border-radius:6px;}
 
   /* admin panel */
   #adminOverlay{position:fixed; top:0; right:0; bottom:0; left:0; z-index:100; background:rgba(0,0,0,0.6);
@@ -225,6 +259,7 @@
     <div class="prayerCard" data-key="isha"><div class="pName">العشاء</div><div class="pTime">--:--</div></div>
     <div class="prayerCard" id="imsakCard"><div class="pName">الإمساك</div><div class="pTime" id="imsakTime">--:--</div></div>
   </div>
+  <div id="devCredit">د. ن شوشة</div>
 </div>
 
 <div id="tickerWrap">
@@ -234,6 +269,7 @@
 </div>
 
 <div id="photoSlide"><div id="photoCaption"></div></div>
+<div id="textSlide"><div class="arabesqueBig"></div><div id="textSlideCat"></div><div id="textSlideTxt"></div><div id="textSlideSource"></div></div>
 
 <div id="blackout">
   <div class="bTitle">حان وقت الصلاة</div>
@@ -330,6 +366,7 @@
       <div class="tabPane" id="tab-general">
         <div class="sectionTitle">اسم المسجد</div>
         <div class="fieldRow"><label>الاسم</label><input type="text" id="in-mosqueName"></div>
+
         <div class="sectionTitle">تنسيق التاريخ الميلادي (حسب بلد الاستخدام)</div>
         <div class="fieldRow"><label>الصيغة</label>
           <select id="in-dateFormat">
@@ -346,6 +383,23 @@
             <option value="water">صوت مياه جارية</option>
           </select>
           <button class="btnGhost" id="testSoundBtn">▶ تجربة</button>
+        </div>
+        <div class="sectionTitle">التاريخ الهجري</div>
+        <div class="fieldRow">
+          <label>مزامنة تلقائية</label>
+          <input type="checkbox" id="in-hijriAutoSync" class="slider-checkbox">
+          <span style="font-size:.85rem; color:var(--cream); opacity:.75;">تصحيح تلقائي كلما توفر إنترنت (يُنصح بتركه مفعّلاً)</span>
+        </div>
+        <div class="fieldRow">
+          <label>تصحيح يدوي (أيام)</label>
+          <input type="number" id="in-hijriOffset" step="1" style="width:80px;">
+          <span style="font-size:.85rem; color:var(--cream); opacity:.75;">يُستخدم فقط عند عدم توفر إنترنت — قارن التاريخ المعروض بتقويم رسمي واضبط الفرق (+/-)</span>
+        </div>
+        <div class="sectionTitle">محتوى المناسبات الدينية</div>
+        <div class="fieldRow">
+          <label>تفعيل تلقائي</label>
+          <input type="checkbox" id="in-occasionEnabled" class="slider-checkbox">
+          <span style="font-size:.85rem; color:var(--cream); opacity:.75;">إظهار أحاديث ونصائح خاصة بيوم الجمعة، شعبان، رمضان، العيدين، عرفة، وعاشوراء تلقائيًا في مواعيدها ضمن دورة العرض</span>
         </div>
         <div class="sectionTitle">إعادة الضبط</div>
         <button class="btnDanger" id="resetAllBtn">إعادة كل الإعدادات للوضع الافتراضي</button>
@@ -435,6 +489,65 @@ const DEFAULT_TEMPLATES = [
 ];
 
 /* ============================================================
+   محتوى خاص بالمناسبات الدينية — يظهر تلقائيًا في دورة العرض
+   بملء الشاشة فقط عند حلول المناسبة (حسب التاريخ الهجري المصحح)
+   ============================================================ */
+const OCCASION_CONTENT = {
+  friday: { label:"🕌 يوم الجمعة", items:[
+    {type:"hadith", txt:"خير يوم طلعت فيه الشمس يوم الجمعة، فيه خُلق آدم، وفيه أُدخل الجنة، وفيه أُخرج منها.", source:"رواه مسلم"},
+    {type:"hadith", txt:"في يوم الجمعة ساعة لا يوافقها عبد مسلم وهو قائم يصلي يسأل الله شيئًا إلا أعطاه إياه.", source:"متفق عليه"},
+    {type:"ayah", txt:"يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا نُودِيَ لِلصَّلَاةِ مِن يَوْمِ الْجُمُعَةِ فَاسْعَوْا إِلَىٰ ذِكْرِ اللَّهِ وَذَرُوا الْبَيْعَ ۚ ذَٰلِكُمْ خَيْرٌ لَّكُمْ إِن كُنتُمْ تَعْلَمُونَ", source:"سورة الجمعة: 9"},
+  ]},
+  shaban: { label:"🌙 شهر شعبان", items:[
+    {type:"hadith", txt:"لم يكن النبي ﷺ يصوم شهرًا أكثر من شعبان، فإنه كان يصومه كله.", source:"متفق عليه"},
+    {type:"ayah", txt:"وَاسْتَغْفِرُوا رَبَّكُمْ ثُمَّ تُوبُوا إِلَيْهِ إِنَّ رَبِّي رَحِيمٌ وَدُودٌ", source:"سورة هود: 90"},
+  ]},
+  ramadan: { label:"🌙 شهر رمضان", items:[
+    {type:"ayah", txt:"شَهْرُ رَمَضَانَ الَّذِي أُنزِلَ فِيهِ الْقُرْآنُ هُدًى لِّلنَّاسِ وَبَيِّنَاتٍ مِّنَ الْهُدَىٰ وَالْفُرْقَانِ ۚ فَمَن شَهِدَ مِنكُمُ الشَّهْرَ فَلْيَصُمْهُ", source:"سورة البقرة: 185"},
+    {type:"hadith", txt:"من صام رمضان إيمانًا واحتسابًا غُفر له ما تقدم من ذنبه.", source:"متفق عليه"},
+    {type:"hadith", txt:"من قام رمضان إيمانًا واحتسابًا غُفر له ما تقدم من ذنبه.", source:"متفق عليه"},
+    {type:"hadith", txt:"تحرَّوا ليلة القدر في الوتر من العشر الأواخر من رمضان.", source:"متفق عليه"},
+  ]},
+  eidFitr: { label:"🎉 عيد الفطر المبارك", items:[
+    {type:"ayah", txt:"وَلِتُكْمِلُوا الْعِدَّةَ وَلِتُكَبِّرُوا اللَّهَ عَلَىٰ مَا هَدَاكُمْ وَلَعَلَّكُمْ تَشْكُرُونَ", source:"سورة البقرة: 185"},
+    {type:"hadith", txt:"فرض رسول الله ﷺ زكاة الفطر طُهرة للصائم من اللغو والرفث، وطعمة للمساكين.", source:"رواه أبو داود، حديث حسن صحيح"},
+  ]},
+  eidAdha: { label:"🐐 عيد الأضحى المبارك", items:[
+    {type:"ayah", txt:"فَصَلِّ لِرَبِّكَ وَانْحَرْ", source:"سورة الكوثر: 2"},
+    {type:"hadith", txt:"ما عمل آدميٌّ من عملٍ يوم النحر أحبَّ إلى الله من إهراق الدم.", source:"رواه الترمذي، حديث حسن"},
+  ]},
+  arafah: { label:"🕋 يوم عرفة", items:[
+    {type:"ayah", txt:"الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِي وَرَضِيتُ لَكُمُ الْإِسْلَامَ دِينًا", source:"سورة المائدة: 3"},
+    {type:"hadith", txt:"ما من يومٍ أكثرَ من أن يُعتق اللهُ فيه عبدًا من النار من يوم عرفة.", source:"رواه مسلم"},
+    {type:"hadith", txt:"صيام يوم عرفة أحتسب على الله أن يُكفِّر السنة التي قبله والسنة التي بعده.", source:"رواه مسلم"},
+  ]},
+  ashura: { label:"🕌 يوم عاشوراء", items:[
+    {type:"ayah", txt:"فَأَنجَيْنَاكُمْ وَأَغْرَقْنَا آلَ فِرْعَوْنَ وَأَنتُمْ تَنظُرُونَ", source:"سورة البقرة: 50"},
+    {type:"hadith", txt:"صيام يوم عاشوراء أحتسب على الله أن يُكفِّر السنة التي قبله.", source:"رواه مسلم"},
+  ]},
+};
+/* شروط تفعيل كل مناسبة: دالة تُعيد true إن كانت المناسبة نشطة اليوم */
+const OCCASION_RULES = {
+  friday:  (hij, weekday) => weekday === 5,
+  shaban:  (hij) => hij.month === 8,
+  ramadan: (hij) => hij.month === 9,
+  eidFitr: (hij) => hij.month === 10 && hij.day <= 3,
+  eidAdha: (hij) => hij.month === 12 && hij.day >= 10 && hij.day <= 13,
+  arafah:  (hij) => hij.month === 12 && hij.day === 9,
+  ashura:  (hij) => hij.month === 1 && hij.day === 10,
+};
+function getActiveOccasionItems(hij, weekday){
+  const items = [];
+  Object.keys(OCCASION_RULES).forEach(key=>{
+    if(OCCASION_RULES[key](hij, weekday)){
+      const occ = OCCASION_CONTENT[key];
+      occ.items.forEach(it => items.push({cat:occ.label, txt:it.txt, source:it.source, kind:it.type}));
+    }
+  });
+  return items;
+}
+
+/* ============================================================
    الحالة والتخزين
    ============================================================ */
 const STORAGE_KEY = "mosqueAppStateV1";
@@ -443,18 +556,22 @@ let state = null;
 
 function defaultState(){
   return {
-    mosqueName: "مسجد الهدى",
-    mode: "manual", // manual | auto
+    mosqueName: "مسجد عبد الرحمن بن عوف",
+    mode: "auto", // manual | auto — الحساب التلقائي الفلكي لولاية الأغواط
     dateFormat: "dmy", // dmy | mdy | ymd
     alertSound: "tones", // tones | birds | water
     prayerTimes: { fajr:"04:12", dhuhr:"12:45", asr:"16:20", maghrib:"19:05", isha:"20:35" },
     iqamaGap: { fajr:20, dhuhr:15, asr:15, maghrib:8, isha:15 },
     prayerDuration: 12,
-    location: { wilayaIndex:15, lat:36.75, lng:3.06, tz:1 }, // default: الجزائر
+    location: { wilayaIndex:2, lat:33.7848, lng:3.1328, tz:1 }, // default: قصر الحيران، ولاية الأغواط
     content: JSON.parse(JSON.stringify(DEFAULT_CONTENT)),
     announcements: [],
     images: [],
-    yearlyTimes: null // { year: 2026, days: { "1-1":{fajr:...}, ... } }
+    yearlyTimes: null, // { year: 2026, days: { "1-1":{fajr:...}, ... } }
+    hijriOffset: 0, // تصحيح يدوي بالأيام للتقويم الهجري (يُضبط مرة، أو يُحدَّث تلقائيًا عند توفر الإنترنت)
+    hijriAutoSync: true, // محاولة المزامنة التلقائية مع خدمة تقويم رسمية كلما توفر إنترنت
+    hijriLastSyncDate: null, // آخر تاريخ (yyyy-mm-dd) تمت فيه مزامنة ناجحة، لتفادي التكرار
+    occasionContentEnabled: true // إظهار محتوى المناسبات الدينية الخاصة (الجمعة، رمضان، الأعياد...) في دورة العرض
   };
 }
 
@@ -568,7 +685,59 @@ function gregorianToHijriApprox(date){
   const year = 30*n + j - 30;
   return { year, month, day };
 }
+function gregorianToHijriCorrected(date){
+  const offsetMs = (state.hijriOffset||0) * 86400000;
+  return gregorianToHijriApprox(new Date(date.getTime() + offsetMs));
+}
 const hijriMonths = ["محرم","صفر","ربيع الأول","ربيع الثاني","جمادى الأولى","جمادى الآخرة","رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"];
+
+/* ============================================================
+   مزامنة تلقائية للتاريخ الهجري مع خدمة تقويم رسمية (Aladhan API)
+   تعمل فقط عند توفر إنترنت، وتحسب إزاحة الأيام تلقائيًا
+   بمقارنة نتيجة الخدمة بالحساب المحلي، ثم تحفظها لتُستخدم بلا إنترنت لاحقًا
+   ============================================================ */
+async function trySyncHijriOffset(){
+  if(!state.hijriAutoSync) return;
+  if(!navigator.onLine) return;
+  const now = new Date();
+  const todayKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+  if(state.hijriLastSyncDate === todayKey) return; // تمت المزامنة اليوم بالفعل
+
+  try{
+    const dd = String(now.getDate()).padStart(2,"0");
+    const mm = String(now.getMonth()+1).padStart(2,"0");
+    const yyyy = now.getFullYear();
+    const res = await fetch(`https://api.aladhan.com/v1/gToH?date=${dd}-${mm}-${yyyy}`, { cache:"no-store" });
+    if(!res.ok) return;
+    const data = await res.json();
+    const h = data && data.data && data.data.hijri;
+    if(!h) return;
+    const officialDay = parseInt(h.day, 10);
+    const officialMonth = parseInt(h.month.number, 10);
+    const officialYear = parseInt(h.year, 10);
+
+    // نحسب فرق الأيام بين حساب محلي (بلا إزاحة) والنتيجة الرسمية
+    const localRaw = gregorianToHijriApprox(now);
+    // تقدير الفارق بالأيام بمقارنة رقم اليوم ضمن نفس الشهر تقريبًا (كافٍ عمليًا لمعظم الحالات)
+    let diffDays = 0;
+    if(localRaw.year===officialYear && localRaw.month===officialMonth){
+      diffDays = officialDay - localRaw.day;
+    }else{
+      // في حال اختلاف الشهر/السنة (قرب بداية الشهر)، جرّب إزاحات صغيرة لإيجاد التطابق
+      for(let d=-3; d<=3; d++){
+        const test = gregorianToHijriApprox(new Date(now.getTime() + d*86400000));
+        if(test.day===officialDay && test.month===officialMonth && test.year===officialYear){
+          diffDays = d; break;
+        }
+      }
+    }
+    state.hijriOffset = diffDays;
+    state.hijriLastSyncDate = todayKey;
+    saveState();
+  }catch(e){
+    // لا إنترنت أو فشل الطلب — نتجاهل بصمت ونستمر بآخر إزاحة محفوظة
+  }
+}
 
 /* ============================================================
    جلب مواقيت اليوم الفعالة (يدوي / تلقائي / من الأرشيف السنوي)
@@ -604,7 +773,7 @@ function updateClock(now){
   else dateStr = `${dd}/${mm}/${yyyy}`; // dmy (افتراضي)
   document.getElementById("gregDate").innerHTML = `${days[now.getDay()]} <span class="dnum">${dateStr}</span>`;
 
-  const hij = gregorianToHijriApprox(now);
+  const hij = gregorianToHijriCorrected(now);
   document.getElementById("hijriDate").textContent = `${hij.day} ${hijriMonths[hij.month-1]} ${hij.year} هـ`;
 
   document.getElementById("fridayBadge").classList.toggle("show", now.getDay()===5);
@@ -722,24 +891,57 @@ function rebuildTicker(){
 }
 
 /* ============================================================
-   وضع عرض الصور بملء الشاشة (يتناوب مع الواجهة الرئيسية)
+   وضع العرض الحيوي بملء الشاشة: يتناوب بين الشاشة الرئيسية
+   وعرض صورة / آية / حديث / نصيحة / إعلان بملء الشاشة
+   كل 10 دقائق، يبقى العنصر ظاهرًا لمدة دقيقة واحدة ثم يعود
    ============================================================ */
-let photoIdx = 0;
-let showingPhoto = false;
-function togglePhotoSlide(){
-  const slide = document.getElementById("photoSlide");
-  if(state.images.length===0) return;
-  showingPhoto = !showingPhoto;
-  if(showingPhoto){
-    const img = state.images[photoIdx % state.images.length];
-    slide.style.backgroundImage = `url(${img.data})`;
-    document.getElementById("photoCaption").textContent = state.mosqueName;
-    slide.classList.add("show");
-    photoIdx++;
-  }else{
-    slide.classList.remove("show");
+let rotationIdx = 0;
+function buildRotationQueue(){
+  const queue = [];
+  state.images.forEach(im => queue.push({type:"image", data:im.data}));
+  state.content.filter(c=>c.on).forEach(c => queue.push({type:"text", cat:c.cat, txt:c.txt}));
+  state.announcements.forEach(a => queue.push({type:"text", cat:"إعلان", txt:a.txt}));
+  if(state.occasionContentEnabled !== false){
+    const now = new Date();
+    const hijToday = gregorianToHijriCorrected(now);
+    getActiveOccasionItems(hijToday, now.getDay()).forEach(it =>
+      queue.push({type:"text", cat:it.cat, txt:it.txt})
+    );
   }
+  return queue;
 }
+function showFullscreenSlide(){
+  if(document.getElementById("blackout").classList.contains("show")) return; // لا تتداخل مع وقت الصلاة
+  const queue = buildRotationQueue();
+  if(queue.length===0) return;
+  const item = queue[rotationIdx % queue.length];
+  rotationIdx++;
+
+  const photoSlide = document.getElementById("photoSlide");
+  const textSlide = document.getElementById("textSlide");
+
+  if(item.type==="image"){
+    photoSlide.style.backgroundImage = `url(${item.data})`;
+    document.getElementById("photoCaption").textContent = state.mosqueName;
+    photoSlide.classList.add("show");
+  }else{
+    document.getElementById("textSlideCat").textContent = item.cat || "";
+    document.getElementById("textSlideTxt").textContent = item.txt;
+    document.getElementById("textSlideSource").textContent = item.source || "";
+    textSlide.classList.remove("slide-ayah","slide-hadith");
+    if(item.kind==="ayah") textSlide.classList.add("slide-ayah");
+    else if(item.kind==="hadith") textSlide.classList.add("slide-hadith");
+    textSlide.classList.add("show");
+  }
+
+  setTimeout(()=>{
+    photoSlide.classList.remove("show");
+    textSlide.classList.remove("show","slide-ayah","slide-hadith");
+  }, 60000); // يبقى ظاهرًا لمدة دقيقة كاملة
+}
+setInterval(showFullscreenSlide, 600000); // كل 10 دقائق، تبدأ من أول دورة بعد فتح الشاشة
+trySyncHijriOffset(); // محاولة مزامنة فورية عند فتح التطبيق إن وُجد إنترنت
+setInterval(trySyncHijriOffset, 3600000); // إعادة المحاولة كل ساعة (تلقائيًا تتجاهل نفسها لو نفس اليوم أو بلا إنترنت)
 
 /* ============================================================
    تنبيه صوتي عند دخول وقت كل أذان (مولّد داخليًا، بلا ملفات، يعمل بلا إنترنت)
@@ -880,7 +1082,6 @@ function tick(){
 }
 tick();
 setInterval(tick, 1000);
-setInterval(togglePhotoSlide, 20000);
 rebuildTicker();
 window.addEventListener("resize", ()=>{ rebuildTicker(); });
 
@@ -1119,6 +1320,9 @@ function populateAdminFromState(){
   document.getElementById("in-mosqueName").value = state.mosqueName;
   document.getElementById("in-dateFormat").value = state.dateFormat;
   document.getElementById("in-alertSound").value = state.alertSound;
+  document.getElementById("in-hijriOffset").value = state.hijriOffset || 0;
+  document.getElementById("in-hijriAutoSync").checked = state.hijriAutoSync !== false;
+  document.getElementById("in-occasionEnabled").checked = state.occasionContentEnabled !== false;
   document.getElementById("mosqueName").textContent = state.mosqueName;
 
   document.getElementById("in-fajr").value = state.prayerTimes.fajr;
@@ -1150,6 +1354,9 @@ document.getElementById("saveBtn").addEventListener("click", ()=>{
   state.mosqueName = document.getElementById("in-mosqueName").value || state.mosqueName;
   state.dateFormat = document.getElementById("in-dateFormat").value || state.dateFormat;
   state.alertSound = document.getElementById("in-alertSound").value || state.alertSound;
+  state.hijriOffset = Number(document.getElementById("in-hijriOffset").value) || 0;
+  state.hijriAutoSync = document.getElementById("in-hijriAutoSync").checked;
+  state.occasionContentEnabled = document.getElementById("in-occasionEnabled").checked;
   document.getElementById("mosqueName").textContent = state.mosqueName;
 
   state.prayerTimes = {
