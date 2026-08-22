@@ -16,7 +16,7 @@
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{width:100%; height:100%; overflow:hidden; background:var(--bg-deep);
     font-family:"Traditional Arabic","Arabic Typesetting","Simplified Arabic","Segoe UI",Tahoma,sans-serif;
-    color:var(--cream); --ticker-h:60px;}
+    color:var(--cream); --ticker-h:110px;}
 
   #stage{position:relative; width:100vw; height:100vh; display:flex; flex-direction:column;
     align-items:center; justify-content:space-between; overflow-y:auto; scrollbar-width:none;
@@ -36,7 +36,7 @@
   .corner.br{bottom:22px; left:22px; border-right:none; border-top:none; border-bottom-left-radius:40px;}
 
   #header{position:relative; z-index:2; width:100%; text-align:center; padding-top:clamp(10px,3vh,32px);}
-  #mosqueName{font-size:clamp(4.2rem,11vh,7.4rem); font-weight:bold; letter-spacing:2px;
+  #mosqueName{font-size:clamp(3.4rem,8.4vh,5.9rem); font-weight:bold; letter-spacing:2px;
     background:linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 45%, var(--gold) 100%);
     background-size:220% auto; -webkit-background-clip:text; background-clip:text; color:transparent;
     animation:shine 6s linear infinite;}
@@ -46,7 +46,7 @@
   #clockWrap{margin-top:clamp(6px,1.6vh,18px); display:flex; align-items:baseline; justify-content:center; gap:14px;}
   #clockTime{font-size:clamp(4rem,10.6vh,8rem); font-weight:bold; color:var(--cream); letter-spacing:2px;
     text-shadow:0 0 24px rgba(201,162,39,0.35);}
-  #clockMeridiem{font-size:clamp(1.8rem,3.3vh,2.7rem); color:var(--gold-light);}
+  #clockMeridiem{display:none;}
 
   /* الساعة العقربية — تظهر بشكل دوري بدل الساعة الرقمية */
   #analogClockWrap{display:none; margin-top:clamp(6px,1.6vh,18px); justify-content:center;
@@ -68,7 +68,8 @@
   #dayName{font-size:clamp(1.4rem,2.6vh,1.85rem); color:var(--gold-light); font-weight:bold; opacity:0.95;}
   .dateSep{color:var(--gold); opacity:0.6; font-size:clamp(1.1rem,2vh,1.4rem);}
 
-  #mihrabWrap{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; margin-top:clamp(2px,1vh,6px);}
+  #mihrabWrap{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center;
+    margin-top:clamp(2px,1vh,6px); margin-bottom:clamp(18px,3.5vh,34px);}
   #mihrab{position:relative; width:clamp(320px,40vh,470px); height:clamp(330px,45vh,510px); border:3px solid var(--gold); border-bottom:none;
     border-radius:190px 190px 18px 18px;
     background:linear-gradient(180deg, rgba(201,162,39,0.08) 0%, rgba(201,162,39,0.02) 60%, transparent 100%);
@@ -76,23 +77,22 @@
     box-shadow:0 0 40px rgba(201,162,39,0.15) inset;}
   #mihrab::before{content:""; position:absolute; top:14px; left:14px; right:14px; bottom:0;
     border:1px solid var(--gold-light); opacity:0.4; border-radius:165px 165px 10px 10px; border-bottom:none;}
-  #nextPrayerLabel{font-size:clamp(1.6rem,3.3vh,2.15rem); color:var(--gold-light); margin-bottom:4px;}
-  #nextPrayerName{font-size:clamp(2.7rem,6vh,4.3rem); font-weight:bold; color:var(--cream); margin-bottom:clamp(6px,1.6vh,14px);}
-  #countdown{font-size:clamp(2.8rem,7.2vh,5rem); font-weight:bold; letter-spacing:3px; color:var(--gold);
+  #nextPrayerLabel{font-size:clamp(1.3rem,2.7vh,1.8rem); color:var(--gold-light); margin-bottom:3px;}
+  #nextPrayerName{font-size:clamp(2.3rem,5vh,3.6rem); font-weight:bold; color:var(--cream); margin-bottom:clamp(4px,1vh,9px);}
+  #countdown{font-size:clamp(2.3rem,5.9vh,4.2rem); font-weight:bold; letter-spacing:2px; color:var(--gold);
     font-variant-numeric:tabular-nums; direction:ltr;}
-  #countdownSub{font-size:clamp(1.2rem,2.3vh,1.5rem); color:var(--cream); opacity:0.65; margin-top:5px;}
+  #countdownSub{font-size:clamp(1rem,2vh,1.3rem); color:var(--cream); opacity:0.65; margin-top:4px;}
 
-  #tickerWrap{position:fixed; bottom:10px; right:0; left:0; z-index:15;
+  #tickerWrap{position:fixed; bottom:10px; right:0; left:0; z-index:15; direction:ltr;
     background:rgba(6,26,24,0.94); border-top:2px solid var(--gold); border-bottom:2px solid var(--gold);
-    padding:clamp(10px,2vh,20px) 0; overflow:hidden; white-space:nowrap; line-height:1.2;
-    transform:scaleX(-1);}
-  #tickerTrack{display:inline-block; white-space:nowrap; direction:ltr;
+    padding:clamp(10px,2vh,20px) 0; overflow:hidden; white-space:nowrap; line-height:1.2;}
+  #tickerTrack{display:inline-block; white-space:nowrap; direction:rtl;
     animation:marqueeScroll linear infinite; animation-duration:70s;}
   .tickerGroup{display:inline-block; white-space:nowrap;}
   .tickerItemSpan{display:inline-block; padding:0 34px; font-size:clamp(2.1rem,4.4vh,2.9rem);
-    color:var(--cream); direction:rtl; font-weight:600; transform:scaleX(-1);}
+    color:var(--cream); direction:rtl; font-weight:600;}
   .tickerItemSpan .cat{color:var(--gold-light); margin-left:10px; font-size:0.82em;}
-  .tickerSep{display:inline-block; color:var(--gold); opacity:0.6; font-size:1rem; transform:scaleX(-1);}
+  .tickerSep{display:inline-block; color:var(--gold); opacity:0.6; font-size:1rem;}
   @keyframes marqueeScroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
 
   .prayerRail{position:absolute; top:50%; transform:translateY(-50%); z-index:2;
@@ -132,6 +132,33 @@
   #clockErrorBanner.show{display:flex;}
   #clockErrorBanner .bTitle{font-size:clamp(2rem,5vh,3.2rem); margin-bottom:20px;}
   #clockErrorBanner .bSub{font-size:clamp(1.1rem,2.4vh,1.6rem); color:var(--cream); opacity:0.85; max-width:900px; line-height:1.6;}
+
+  #blackout .phoneIcon{font-size:clamp(3rem,8vh,5rem); margin-bottom:16px;}
+
+  /* أذان: وميض بملء الشاشة، له الأولوية على أي محتوى آخر (صور/خلفية) */
+  #adhanFlash{position:fixed; top:0; right:0; bottom:0; left:0; z-index:92; display:none;
+    align-items:center; justify-content:center; flex-direction:column; text-align:center; background:#000;}
+  #adhanFlash.show{display:flex;}
+  #adhanFlash .flashWord{font-size:clamp(4rem,14vh,10rem); font-weight:bold; color:var(--gold);
+    animation:adhanBlink 1s steps(1,end) infinite; text-shadow:0 0 40px rgba(201,162,39,0.6);}
+  #adhanFlash .flashPrayer{font-size:clamp(2rem,6vh,4rem); color:var(--cream); margin-top:20px;}
+  @keyframes adhanBlink{0%,49%{opacity:1;} 50%,100%{opacity:0.15;}}
+
+  /* عداد تنازلي بملء الشاشة بين الأذان والإقامة */
+  #iqamaFull{position:fixed; top:0; right:0; bottom:0; left:0; z-index:78; display:none;
+    align-items:center; justify-content:center; flex-direction:column; text-align:center;
+    background:radial-gradient(ellipse at 50% 30%, var(--bg-mid) 0%, var(--bg-deep) 55%, var(--bg-deep-night) 100%);}
+  #iqamaFull.show{display:flex;}
+  #iqamaFull .ifLabel{font-size:clamp(1.8rem,4vh,2.6rem); color:var(--gold-light); margin-bottom:10px;}
+  #iqamaFull .ifPrayer{font-size:clamp(2.6rem,7vh,4.6rem); font-weight:bold; color:var(--cream); margin-bottom:20px;}
+  #iqamaFull .ifCount{font-size:clamp(5rem,18vh,11rem); font-weight:bold; color:var(--gold);
+    font-variant-numeric:tabular-nums; direction:ltr; text-shadow:0 0 40px rgba(201,162,39,0.4);}
+  #iqamaFull .ifSub{font-size:clamp(1.3rem,2.6vh,1.8rem); color:var(--cream); opacity:0.7; margin-top:16px;}
+
+  /* شريط الوقت المتبقي للصلاة القادمة */
+  #nextPrayerBar{position:fixed; top:0; right:0; left:0; height:7px; z-index:20; background:rgba(255,255,255,0.08);}
+  #nextPrayerBar #nextPrayerBarFill{height:100%; width:0%;
+    background:linear-gradient(90deg, var(--gold), var(--gold-light)); transition:width 1s linear;}
 
   /* full-screen photo slide mode */
   #photoSlide{position:fixed; top:0; right:0; bottom:0; left:0; z-index:30; display:none;
@@ -275,6 +302,7 @@
   <div id="header">
     <div id="mosqueName">مسجد الهدى</div>
     <div id="fridayBadge">جمعة مباركة</div>
+    <div id="dateRow"><span id="dayName">--</span><span class="dateSep">•</span><span id="hijriDate">--</span><span class="dateSep">•</span><span id="gregDate">--</span></div>
     <div id="clockWrap"><span id="clockTime">--:--</span><span id="clockMeridiem">--</span></div>
     <div id="analogClockWrap">
       <svg id="analogClock" viewBox="0 0 200 200">
@@ -286,7 +314,6 @@
         <circle class="centerDot" cx="100" cy="100" r="6"/>
       </svg>
     </div>
-    <div id="dateRow"><span id="dayName">--</span><span class="dateSep">•</span><span id="hijriDate">--</span><span class="dateSep">•</span><span id="gregDate">--</span></div>
   </div>
 
   <div id="mihrabWrap">
@@ -323,9 +350,24 @@
 <div id="photoSlide"><div id="photoCaption"></div></div>
 <div id="textSlide"><div class="arabesqueBig"></div><div id="textSlideFrame"><div id="textSlideCat"></div><div id="textSlideTxt"></div><div id="textSlideSource"></div></div></div>
 
+<div id="nextPrayerBar"><div id="nextPrayerBarFill"></div></div>
+
 <div id="blackout">
+  <div class="phoneIcon">📵</div>
   <div class="bTitle">حان وقت الصلاة</div>
-  <div class="bSub">أقيمت الصلاة، رفع الله دعوتكم</div>
+  <div class="bSub">أقيمت الصلاة، يرجى إغلاق الهواتف والالتزام بالصف — رفع الله دعوتكم</div>
+</div>
+
+<div id="adhanFlash">
+  <div class="flashWord">الأذان</div>
+  <div class="flashPrayer" id="adhanFlashPrayer">--</div>
+</div>
+
+<div id="iqamaFull">
+  <div class="ifLabel">حان أذان</div>
+  <div class="ifPrayer" id="iqamaFullPrayer">--</div>
+  <div class="ifCount" id="iqamaFullCount">--:--</div>
+  <div class="ifSub">متبقٍ حتى الإقامة</div>
 </div>
 
 <div id="clockErrorBanner">
@@ -894,10 +936,7 @@ function updateClock(now){
   let h = now.getHours();
   const m = String(now.getMinutes()).padStart(2,"0");
   const s = String(now.getSeconds()).padStart(2,"0");
-  const meridiem = h>=12 ? "م":"ص";
-  const h12 = h%12===0?12:h%12;
-  document.getElementById("clockTime").textContent = `${String(h12).padStart(2,"0")}:${m}:${s}`;
-  document.getElementById("clockMeridiem").textContent = meridiem;
+  document.getElementById("clockTime").textContent = `${String(h).padStart(2,"0")}:${m}:${s}`;
 
   // تحديث عقارب الساعة العقربية (تُحسب دائمًا، تظهر فقط عند تفعيلها دوريًا)
   const secDeg = now.getSeconds()*6;
@@ -943,6 +982,14 @@ function updateClock(now){
 /* ============================================================
    الصلاة القادمة + العد التنازلي + الإطفاء
    ============================================================ */
+let adhanFlashUntil = 0; // طابع زمني (ms): إلى متى يستمر وميض "الأذان" بملء الشاشة
+function triggerAdhanFlash(key){
+  adhanFlashUntil = Date.now() + 120000; // دقيقتان (مدة الأذان تقريبًا) وميض بملء الشاشة، له الأولوية على أي محتوى آخر
+  document.getElementById("adhanFlashPrayer").textContent = prayerNamesAr[key];
+  // إخفاء أي صورة/نص ظاهر حاليًا فورًا لإعطاء الأولوية الكاملة للأذان
+  document.getElementById("photoSlide").classList.remove("show");
+  document.getElementById("textSlide").classList.remove("show","slide-ayah","slide-hadith");
+}
 function updatePrayers(now){
   const times = getEffectivePrayerTimes(now);
   const todays = order.map(k => ({ key:k, date: toDateToday(times[k]) }));
@@ -963,15 +1010,41 @@ function updatePrayers(now){
   });
   if(isTomorrow) document.querySelectorAll(".prayerCard").forEach(c=>c.classList.remove("active"));
 
+  /* شريط الوقت المتبقي للصلاة القادمة: يمتلئ كامل الشريط بعد الصلاة السابقة مباشرة، ويفرغ تدريجيًا حتى الأذان القادم */
+  let prev = null;
+  for(const p of todays){ if(p.date <= now) prev = p; }
+  if(!prev){
+    const yestIsha = new Date(toDateToday(times.isha).getTime() - 24*3600000);
+    prev = { key:"isha", date: yestIsha };
+  }
+  const totalSpan = next.date - prev.date;
+  const remainingFrac = totalSpan > 0 ? Math.max(0, Math.min(1, (next.date - now) / totalSpan)) : 0;
+  document.getElementById("nextPrayerBarFill").style.width = (remainingFrac*100).toFixed(2) + "%";
+
   const blackout = document.getElementById("blackout");
+  const adhanFlash = document.getElementById("adhanFlash");
+  const iqamaFull = document.getElementById("iqamaFull");
+  const inAdhanFlash = Date.now() < adhanFlashUntil;
+  adhanFlash.classList.toggle("show", inAdhanFlash);
+
   let inPrayer=false;
+  let inIqamaGap=false, gapKey=null, gapIqamaDate=null;
   for(const k of order){
     const adhan = toDateToday(times[k]);
     const iqama = new Date(adhan.getTime() + (state.iqamaGap[k]||15)*60000);
     const end = new Date(iqama.getTime() + (state.prayerDuration||12)*60000);
     if(now>=iqama && now<end){ inPrayer=true; break; }
+    if(now>=adhan && now<iqama){ inIqamaGap=true; gapKey=k; gapIqamaDate=iqama; }
   }
   blackout.classList.toggle("show", inPrayer);
+
+  /* العداد التنازلي بملء الشاشة بين الأذان والإقامة (يظهر بعد انتهاء وميض الأذان) */
+  const showIqamaFull = inIqamaGap && !inAdhanFlash && !inPrayer;
+  iqamaFull.classList.toggle("show", showIqamaFull);
+  if(showIqamaFull){
+    document.getElementById("iqamaFullPrayer").textContent = prayerNamesAr[gapKey];
+    document.getElementById("iqamaFullCount").textContent = fmtHMS(gapIqamaDate-now);
+  }
 }
 
 const periodThemes = {
@@ -1023,7 +1096,19 @@ function buildMarqueeHTML(){
 }
 function syncTickerHeight(){
   const h = document.getElementById("tickerWrap").offsetHeight;
-  document.documentElement.style.setProperty("--ticker-h", h + "px");
+  document.documentElement.style.setProperty("--ticker-h", (h + 22) + "px"); // هامش أمان أكبر لتفادي أي تلاصق مع صندوق الصلاة القادمة
+}
+function measureAndApplyTickerSpeed(groupA, track, attemptsLeft){
+  const singleWidth = groupA.offsetWidth;
+  // إذا كان القياس صغيرًا بشكل غير منطقي (النص لم يُرسم بعد)، أعد المحاولة بدل اعتماد سرعة خاطئة
+  if(singleWidth < 200 && attemptsLeft > 0){
+    setTimeout(()=> measureAndApplyTickerSpeed(groupA, track, attemptsLeft-1), 150);
+    return;
+  }
+  const speedPxPerSec = 26;
+  const duration = Math.max(45, (singleWidth||800) / speedPxPerSec);
+  track.style.animationDuration = duration + "s";
+  syncTickerHeight();
 }
 function rebuildTicker(){
   const html = buildMarqueeHTML();
@@ -1031,15 +1116,15 @@ function rebuildTicker(){
   const groupB = document.getElementById("tickerGroupB");
   groupA.innerHTML = html;
   groupB.innerHTML = html;
-  requestAnimationFrame(()=>{
-    const track = document.getElementById("tickerTrack");
-    const singleWidth = groupA.offsetWidth || 800;
-    const speedPxPerSec = 26;
-    const duration = Math.max(45, singleWidth / speedPxPerSec);
-    track.style.animationDuration = duration + "s";
-    syncTickerHeight();
-  });
+  const track = document.getElementById("tickerTrack");
+  const applySpeed = () => requestAnimationFrame(()=> measureAndApplyTickerSpeed(groupA, track, 8));
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(applySpeed).catch(applySpeed);
+  }else{
+    applySpeed();
+  }
 }
+
 
 /* ============================================================
    وضع العرض الحيوي بملء الشاشة: يتناوب بين الشاشة الرئيسية
@@ -1063,6 +1148,8 @@ function buildRotationQueue(){
 }
 function showFullscreenSlide(){
   if(document.getElementById("blackout").classList.contains("show")) return; // لا تتداخل مع وقت الصلاة
+  if(document.getElementById("adhanFlash").classList.contains("show")) return; // الأذان له الأولوية القصوى
+  if(document.getElementById("iqamaFull").classList.contains("show")) return; // ولا مع عداد الإقامة بملء الشاشة
   if(document.getElementById("clockErrorBanner").classList.contains("show")) return; // لا تعرض محتوى مناسبات بناءً على ساعة خاطئة
   const queue = buildRotationQueue();
   if(queue.length===0) return;
@@ -1074,7 +1161,6 @@ function showFullscreenSlide(){
 
   if(item.type==="image"){
     photoSlide.style.backgroundImage = `url(${item.data})`;
-    document.getElementById("photoCaption").textContent = state.mosqueName;
     photoSlide.classList.add("show");
   }else{
     document.getElementById("textSlideCat").textContent = item.cat || "";
@@ -1221,6 +1307,7 @@ function checkAdhanAlert(now, times){
     if(diffSec >= 0 && diffSec < 2 && firedAdhanKey[fireKey] !== true){
       firedAdhanKey[fireKey] = true;
       playAlertSound();
+      triggerAdhanFlash(k);
     }
   });
 }
@@ -1244,6 +1331,8 @@ function tick(){
   updatePrayers(now);
   updatePeriodTheme(now);
   checkAdhanAlert(now, getEffectivePrayerTimes(now));
+  // إعادة ضبط المساحة المحجوزة للشريط دوريًا (كل 5 ثوانٍ) كضمان إضافي لعدم تراكبه مع صندوق الصلاة القادمة
+  if(now.getSeconds() % 5 === 0) syncTickerHeight();
 }
 /* ============================================================
    الساعة العقربية — تظهر بشكل دوري بدل الساعة الرقمية لبضع ثوانٍ
@@ -1468,27 +1557,43 @@ document.getElementById("addAnnBtn").addEventListener("click", ()=>{
 document.getElementById("pickImgBtn").addEventListener("click", ()=>{
   document.getElementById("imgFileInput").click();
 });
+function compressAndStoreImage(source, w, h){
+  const canvas = document.createElement("canvas");
+  const maxDim = 1280;
+  if(w>h && w>maxDim){ h = h*(maxDim/w); w = maxDim; }
+  else if(h>maxDim){ w = w*(maxDim/h); h = maxDim; }
+  canvas.width = w; canvas.height = h;
+  canvas.getContext("2d").drawImage(source,0,0,w,h);
+  const compressed = canvas.toDataURL("image/jpeg", 0.7);
+  state.images.push({ id:Date.now()+Math.random(), data: compressed });
+  renderImgGrid();
+}
 document.getElementById("imgFileInput").addEventListener("change", (e)=>{
   const files = Array.from(e.target.files);
   files.forEach(file=>{
-    const reader = new FileReader();
-    reader.onload = (ev)=>{
-      const img = new Image();
-      img.onload = ()=>{
-        const canvas = document.createElement("canvas");
-        const maxDim = 1280;
-        let w = img.width, h = img.height;
-        if(w>h && w>maxDim){ h = h*(maxDim/w); w = maxDim; }
-        else if(h>maxDim){ w = w*(maxDim/h); h = maxDim; }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext("2d").drawImage(img,0,0,w,h);
-        const compressed = canvas.toDataURL("image/jpeg", 0.7);
-        state.images.push({ id:Date.now()+Math.random(), data: compressed });
-        renderImgGrid();
+    // نستعمل createImageBitmap مع تصحيح الاتجاه (EXIF) لتفادي الصور المقلوبة أو النائمة
+    if(window.createImageBitmap){
+      createImageBitmap(file, { imageOrientation: "from-image" }).then(bitmap=>{
+        compressAndStoreImage(bitmap, bitmap.width, bitmap.height);
+      }).catch(()=>{
+        // خطة بديلة للمتصفحات التي لا تدعم الخيار أعلاه
+        const reader = new FileReader();
+        reader.onload = (ev)=>{
+          const img = new Image();
+          img.onload = ()=> compressAndStoreImage(img, img.width, img.height);
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }else{
+      const reader = new FileReader();
+      reader.onload = (ev)=>{
+        const img = new Image();
+        img.onload = ()=> compressAndStoreImage(img, img.width, img.height);
+        img.src = ev.target.result;
       };
-      img.src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
+    }
   });
   e.target.value = "";
 });
