@@ -33,7 +33,7 @@
   .corner.br{bottom:22px; left:22px; border-right:none; border-top:none; border-bottom-left-radius:40px;}
 
   #header{position:relative; z-index:2; width:100%; text-align:center; padding-top:clamp(10px,3vh,32px);}
-  #mosqueName{font-size:clamp(2.5rem,6.6vh,4.2rem); font-weight:bold; letter-spacing:2px;
+  #mosqueName{font-size:clamp(4.2rem,11vh,7.4rem); font-weight:bold; letter-spacing:2px;
     background:linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 45%, var(--gold) 100%);
     background-size:220% auto; -webkit-background-clip:text; background-clip:text; color:transparent;
     animation:shine 6s linear infinite;}
@@ -47,7 +47,8 @@
   #dateRow{display:flex; align-items:center; justify-content:center; gap:10px; margin-top:3px;}
   #hijriDate, #gregDate{font-size:clamp(1.4rem,2.6vh,1.85rem); color:var(--cream); opacity:0.75;}
   #gregDate .dnum{direction:ltr; unicode-bidi:isolate; display:inline-block;}
-  #dateSep{color:var(--gold); opacity:0.6; font-size:clamp(1.1rem,2vh,1.4rem);}
+  #dayName{font-size:clamp(1.4rem,2.6vh,1.85rem); color:var(--gold-light); font-weight:bold; opacity:0.95;}
+  .dateSep{color:var(--gold); opacity:0.6; font-size:clamp(1.1rem,2vh,1.4rem);}
 
   #mihrabWrap{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; margin-top:clamp(2px,1vh,6px);}
   #mihrab{position:relative; width:clamp(320px,40vh,470px); height:clamp(330px,45vh,510px); border:3px solid var(--gold); border-bottom:none;
@@ -235,7 +236,7 @@
     <div id="mosqueName">مسجد الهدى</div>
     <div id="fridayBadge">جمعة مباركة</div>
     <div id="clockWrap"><span id="clockTime">--:--</span><span id="clockMeridiem">--</span></div>
-    <div id="dateRow"><span id="hijriDate">--</span><span id="dateSep">•</span><span id="gregDate">--</span></div>
+    <div id="dateRow"><span id="dayName">--</span><span class="dateSep">•</span><span id="hijriDate">--</span><span class="dateSep">•</span><span id="gregDate">--</span></div>
   </div>
 
   <div id="mihrabWrap">
@@ -767,11 +768,9 @@ function updateClock(now){
 
   const days=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
   const dd = now.getDate(), mm = now.getMonth()+1, yyyy = now.getFullYear();
-  let dateStr;
-  if(state.dateFormat === "mdy") dateStr = `${mm}/${dd}/${yyyy}`;
-  else if(state.dateFormat === "ymd") dateStr = `${yyyy}-${String(mm).padStart(2,"0")}-${String(dd).padStart(2,"0")}`;
-  else dateStr = `${dd}/${mm}/${yyyy}`; // dmy (افتراضي)
-  document.getElementById("gregDate").innerHTML = `${days[now.getDay()]} <span class="dnum">${dateStr}</span>`;
+  const dateStr = `${yyyy}/${String(mm).padStart(2,"0")}/${String(dd).padStart(2,"0")}`;
+  document.getElementById("dayName").textContent = days[now.getDay()];
+  document.getElementById("gregDate").innerHTML = `<span class="dnum">${dateStr}</span>`;
 
   const hij = gregorianToHijriCorrected(now);
   document.getElementById("hijriDate").textContent = `${hij.day} ${hijriMonths[hij.month-1]} ${hij.year} هـ`;
