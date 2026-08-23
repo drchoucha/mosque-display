@@ -95,14 +95,14 @@
   .tickerSep{display:inline-block; color:var(--gold); opacity:0.6; font-size:1rem;}
   @keyframes marqueeScroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
 
-  .prayerRail{position:absolute; top:50%; transform:translateY(-50%); z-index:2;
-    display:flex; flex-direction:column; gap:clamp(14px,2.6vh,30px);}
+  .prayerRail{position:absolute; top:calc(50% - (var(--ticker-h, 110px) / 4)); transform:translateY(-50%); z-index:2;
+    display:flex; flex-direction:column; gap:clamp(10px,2vh,22px);}
   .prayerRail.right{right:clamp(18px,3.2vw,60px);}
   .prayerRail.left{left:clamp(18px,3.2vw,60px);}
-  .prayerCard{width:clamp(140px,16vw,220px); background:rgba(255,255,255,0.04); border:1px solid rgba(201,162,39,0.35);
-    border-radius:14px; padding:clamp(11px,2vh,18px) 8px; text-align:center; transition:all .4s ease;}
-  .prayerCard .pName{font-size:clamp(1.35rem,2.7vh,1.75rem); color:var(--gold-light); margin-bottom:5px;}
-  .prayerCard .pTime{font-size:clamp(1.7rem,3.6vh,2.3rem); font-weight:bold; color:var(--cream); font-variant-numeric:tabular-nums; direction:ltr;}
+  .prayerCard{width:clamp(160px,17vw,250px); background:rgba(255,255,255,0.04); border:1px solid rgba(201,162,39,0.35);
+    border-radius:16px; padding:clamp(12px,2.2vh,20px) 9px; text-align:center; transition:all .4s ease;}
+  .prayerCard .pName{font-size:clamp(2.6rem,5.2vh,3.4rem); color:var(--gold-light); margin-bottom:7px;}
+  .prayerCard .pTime{font-size:clamp(2.6rem,5.4vh,3.5rem); font-weight:bold; color:var(--cream); font-variant-numeric:tabular-nums; direction:ltr;}
   .prayerCard.active{background:linear-gradient(180deg, rgba(201,162,39,0.28), rgba(201,162,39,0.08));
     border-color:var(--gold); transform:scale(1.08); box-shadow:0 8px 24px rgba(201,162,39,0.25);}
   .prayerCard.active .pName{color:var(--gold);}
@@ -112,7 +112,7 @@
     border-color:var(--gold); transform:scale(1.08); box-shadow:0 8px 24px rgba(201,162,39,0.25);}
   #imsakCard.ramadanActive .pName{color:var(--gold);}
   #sunriseCard{opacity:0.7; border-style:dashed;}
-  #sunriseCard .pTime{font-size:clamp(1.4rem,2.9vh,1.9rem);}
+  #sunriseCard .pTime{font-size:clamp(2.1rem,4.4vh,2.8rem);}
 
   #ramadanBanner{display:none; position:relative; z-index:2;
     background:linear-gradient(90deg, rgba(201,162,39,0.12), rgba(201,162,39,0.22), rgba(201,162,39,0.12));
@@ -125,7 +125,7 @@
     flex-direction:column; align-items:center; justify-content:center; color:var(--gold); text-align:center;}
   #blackout.show{display:flex;}
   #blackout .bTitle{font-size:2.4rem; margin-bottom:14px;}
-  #blackout .bSub{font-size:1.2rem; color:var(--cream); opacity:0.8;}
+  #blackout .bSub{font-size:clamp(1.6rem,3.4vh,2.3rem); color:var(--cream); opacity:0.9; max-width:90%; line-height:1.6;}
 
   #clockErrorBanner{position:fixed; top:0; right:0; bottom:0; left:0; background:#1a0e04; display:none; z-index:85;
     flex-direction:column; align-items:center; justify-content:center; color:var(--gold); text-align:center; padding:6vw;}
@@ -133,14 +133,16 @@
   #clockErrorBanner .bTitle{font-size:clamp(2rem,5vh,3.2rem); margin-bottom:20px;}
   #clockErrorBanner .bSub{font-size:clamp(1.1rem,2.4vh,1.6rem); color:var(--cream); opacity:0.85; max-width:900px; line-height:1.6;}
 
-  #blackout .phoneIcon{font-size:clamp(3rem,8vh,5rem); margin-bottom:16px;}
+  #blackout .phoneIcon{font-size:clamp(4.2rem,11vh,7rem); margin-bottom:20px; color:#ffffff; line-height:0;}
 
   /* أذان: وميض بملء الشاشة، له الأولوية على أي محتوى آخر (صور/خلفية) */
   #adhanFlash{position:fixed; top:0; right:0; bottom:0; left:0; z-index:92; display:none;
-    align-items:center; justify-content:center; flex-direction:column; text-align:center; background:#000;}
+    align-items:center; justify-content:flex-start; flex-direction:column; text-align:center; background:#000;
+    padding-top:8vh;}
   #adhanFlash.show{display:flex;}
-  #adhanFlash .flashWord{font-size:clamp(4rem,14vh,10rem); font-weight:bold; color:var(--gold);
-    animation:adhanBlink 1s steps(1,end) infinite; text-shadow:0 0 40px rgba(201,162,39,0.6);}
+  #adhanFlash .flashWord{font-family:"Amiri","Traditional Arabic","Arabic Typesetting",serif;
+    font-size:clamp(5rem,19vh,14rem); font-weight:bold; color:#ffffff;
+    animation:adhanBlink 1s steps(1,end) infinite; text-shadow:0 0 50px rgba(255,255,255,0.55);}
   #adhanFlash .flashPrayer{font-size:clamp(2rem,6vh,4rem); color:var(--cream); margin-top:20px;}
   @keyframes adhanBlink{0%,49%{opacity:1;} 50%,100%{opacity:0.15;}}
 
@@ -159,6 +161,16 @@
   #nextPrayerBar{position:fixed; top:0; right:0; left:0; height:7px; z-index:20; background:rgba(255,255,255,0.08);}
   #nextPrayerBar #nextPrayerBarFill{height:100%; width:0%;
     background:linear-gradient(90deg, var(--gold), var(--gold-light)); transition:width 1s linear;}
+
+  /* أذكار ما بعد الصلاة: تظهر بملء الشاشة فور انتهاء الصلاة مباشرة */
+  #adhkarFull{position:fixed; top:0; right:0; bottom:0; left:0; z-index:77; display:none;
+    align-items:center; justify-content:center; flex-direction:column; text-align:center;
+    padding:6vh 9vw; background:radial-gradient(ellipse at 50% 20%, var(--bg-mid) 0%, var(--bg-deep) 55%, var(--bg-deep-night) 100%);}
+  #adhkarFull.show{display:flex;}
+  #adhkarFull .afLabel{font-size:clamp(1.5rem,3vh,2.1rem); color:var(--gold-light); margin-bottom:8px; opacity:0.85;}
+  #adhkarFull .afTitle{font-size:clamp(1.9rem,4vh,2.9rem); font-weight:bold; color:var(--gold); margin-bottom:26px;}
+  #adhkarFull .afText{font-size:clamp(1.6rem,3.9vh,2.7rem); line-height:2.1; color:var(--cream); max-width:1150px;
+    font-weight:600; white-space:pre-line;}
 
   /* full-screen photo slide mode */
   #photoSlide{position:fixed; top:0; right:0; bottom:0; left:0; z-index:30; display:none;
@@ -353,9 +365,15 @@
 <div id="nextPrayerBar"><div id="nextPrayerBarFill"></div></div>
 
 <div id="blackout">
-  <div class="phoneIcon">📵</div>
+  <div class="phoneIcon">
+    <svg viewBox="0 0 100 100" width="1em" height="1em" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="30" y="8" width="40" height="84" rx="8" stroke="currentColor" stroke-width="6"/>
+      <line x1="30" y1="76" x2="70" y2="76" stroke="currentColor" stroke-width="6"/>
+      <line x1="12" y1="12" x2="88" y2="88" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+    </svg>
+  </div>
   <div class="bTitle">حان وقت الصلاة</div>
-  <div class="bSub">أقيمت الصلاة، يرجى إغلاق الهواتف والالتزام بالصف — رفع الله دعوتكم</div>
+  <div class="bSub">أقيمت الصلاة، يرجى إغلاق الهواتف والالتزام بالصف — رفع الله دعواتكم</div>
 </div>
 
 <div id="adhanFlash">
@@ -368,6 +386,12 @@
   <div class="ifPrayer" id="iqamaFullPrayer">--</div>
   <div class="ifCount" id="iqamaFullCount">--:--</div>
   <div class="ifSub">متبقٍ حتى الإقامة</div>
+</div>
+
+<div id="adhkarFull">
+  <div class="afLabel">أذكار ما بعد الصلاة</div>
+  <div class="afTitle" id="adhkarTitle">--</div>
+  <div class="afText" id="adhkarText">--</div>
 </div>
 
 <div id="clockErrorBanner">
@@ -637,9 +661,13 @@ const OCCASION_CONTENT = {
     {type:"hadith", txt:"خير يوم طلعت فيه الشمس يوم الجمعة، فيه خُلق آدم، وفيه أُدخل الجنة، وفيه أُخرج منها.", source:"رواه مسلم"},
     {type:"hadith", txt:"في يوم الجمعة ساعة لا يوافقها عبد مسلم وهو قائم يصلي يسأل الله شيئًا إلا أعطاه إياه.", source:"متفق عليه"},
     {type:"ayah", txt:"يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا نُودِيَ لِلصَّلَاةِ مِن يَوْمِ الْجُمُعَةِ فَاسْعَوْا إِلَىٰ ذِكْرِ اللَّهِ وَذَرُوا الْبَيْعَ ۚ ذَٰلِكُمْ خَيْرٌ لَّكُمْ إِن كُنتُمْ تَعْلَمُونَ", source:"سورة الجمعة: 9"},
+    {type:"hadith", txt:"أكثروا الصلاة عليَّ يوم الجمعة، فإن صلاتكم معروضة عليَّ.", source:"رواه أبو داود، حديث صحيح"},
+    {type:"hadith", txt:"من اغتسل يوم الجمعة غسل الجنابة ثم راح فكأنما قرَّب بدنة.", source:"متفق عليه"},
+    {type:"hadith", txt:"من قرأ سورة الكهف يوم الجمعة أضاء له من النور ما بين الجمعتين.", source:"رواه الحاكم، حديث صحيح"},
   ]},
   shaban: { label:"🌙 شهر شعبان", items:[
     {type:"hadith", txt:"لم يكن النبي ﷺ يصوم شهرًا أكثر من شعبان، فإنه كان يصومه كله.", source:"متفق عليه"},
+    {type:"hadith", txt:"ذلك شهر يغفل الناس عنه بين رجب ورمضان، وهو شهر تُرفع فيه الأعمال إلى رب العالمين، فأحب أن يُرفع عملي وأنا صائم.", source:"رواه النسائي، حديث حسن"},
     {type:"ayah", txt:"وَاسْتَغْفِرُوا رَبَّكُمْ ثُمَّ تُوبُوا إِلَيْهِ إِنَّ رَبِّي رَحِيمٌ وَدُودٌ", source:"سورة هود: 90"},
   ]},
   ramadan: { label:"🌙 شهر رمضان", items:[
@@ -647,23 +675,32 @@ const OCCASION_CONTENT = {
     {type:"hadith", txt:"من صام رمضان إيمانًا واحتسابًا غُفر له ما تقدم من ذنبه.", source:"متفق عليه"},
     {type:"hadith", txt:"من قام رمضان إيمانًا واحتسابًا غُفر له ما تقدم من ذنبه.", source:"متفق عليه"},
     {type:"hadith", txt:"تحرَّوا ليلة القدر في الوتر من العشر الأواخر من رمضان.", source:"متفق عليه"},
+    {type:"hadith", txt:"إذا جاء رمضان فُتحت أبواب الجنة، وغُلقت أبواب النار، وصُفدت الشياطين.", source:"متفق عليه"},
+    {type:"hadith", txt:"للصائم فرحتان يفرحهما: إذا أفطر فرح، وإذا لقي ربه فرح بصومه.", source:"متفق عليه"},
+    {type:"ayah", txt:"لَيْلَةُ الْقَدْرِ خَيْرٌ مِّنْ أَلْفِ شَهْرٍ", source:"سورة القدر: 3"},
   ]},
   eidFitr: { label:"🎉 عيد الفطر المبارك", items:[
     {type:"ayah", txt:"وَلِتُكْمِلُوا الْعِدَّةَ وَلِتُكَبِّرُوا اللَّهَ عَلَىٰ مَا هَدَاكُمْ وَلَعَلَّكُمْ تَشْكُرُونَ", source:"سورة البقرة: 185"},
     {type:"hadith", txt:"فرض رسول الله ﷺ زكاة الفطر طُهرة للصائم من اللغو والرفث، وطعمة للمساكين.", source:"رواه أبو داود، حديث حسن صحيح"},
+    {type:"hadith", txt:"إن يوم الفطر يوم يجزي الله فيه الصائمين، ويثيب فيه القائمين.", source:"رواه الطبراني"},
+    {type:"nasiha", txt:"🌙 كل عام وأنتم بخير، تقبل الله منا ومنكم صالح الأعمال."},
   ]},
   eidAdha: { label:"🐐 عيد الأضحى المبارك", items:[
     {type:"ayah", txt:"فَصَلِّ لِرَبِّكَ وَانْحَرْ", source:"سورة الكوثر: 2"},
     {type:"hadith", txt:"ما عمل آدميٌّ من عملٍ يوم النحر أحبَّ إلى الله من إهراق الدم.", source:"رواه الترمذي، حديث حسن"},
+    {type:"hadith", txt:"ما من أيام العمل الصالح فيها أحب إلى الله من هذه الأيام، يعني أيام العشر.", source:"رواه البخاري"},
+    {type:"nasiha", txt:"🐐 عيدكم مبارك، تقبل الله منا ومنكم الأضاحي والقربات."},
   ]},
   arafah: { label:"🕋 يوم عرفة", items:[
     {type:"ayah", txt:"الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِي وَرَضِيتُ لَكُمُ الْإِسْلَامَ دِينًا", source:"سورة المائدة: 3"},
     {type:"hadith", txt:"ما من يومٍ أكثرَ من أن يُعتق اللهُ فيه عبدًا من النار من يوم عرفة.", source:"رواه مسلم"},
     {type:"hadith", txt:"صيام يوم عرفة أحتسب على الله أن يُكفِّر السنة التي قبله والسنة التي بعده.", source:"رواه مسلم"},
+    {type:"hadith", txt:"خير الدعاء دعاء يوم عرفة، وخير ما قلت أنا والنبيون من قبلي: لا إله إلا الله وحده لا شريك له.", source:"رواه الترمذي، حديث حسن"},
   ]},
   ashura: { label:"🕌 يوم عاشوراء", items:[
     {type:"ayah", txt:"فَأَنجَيْنَاكُمْ وَأَغْرَقْنَا آلَ فِرْعَوْنَ وَأَنتُمْ تَنظُرُونَ", source:"سورة البقرة: 50"},
     {type:"hadith", txt:"صيام يوم عاشوراء أحتسب على الله أن يُكفِّر السنة التي قبله.", source:"رواه مسلم"},
+    {type:"hadith", txt:"هذا يوم عاشوراء ولم يكتب الله عليكم صيامه، وأنا صائم، فمن شاء فليصم ومن شاء فليفطر.", source:"متفق عليه"},
   ]},
 };
 /* شروط تفعيل كل مناسبة: دالة تُعيد true إن كانت المناسبة نشطة اليوم */
@@ -718,7 +755,9 @@ function defaultState(){
     hijriSyncVersion: 0, // رقم إصدار آخر مزامنة ناجحة، يُستخدم لإجبار إعادة المزامنة عند تحديث المنطق
     occasionContentEnabled: true, // إظهار محتوى المناسبات الدينية الخاصة (الجمعة، رمضان، الأعياد...) في دورة العرض
     clockOffsetMs: 0, // الفارق بين ساعة الإنترنت الصحيحة وساعة الجهاز، يُحفظ محليًا ليصحح التاريخ/الوقت حتى لو أخطأت ساعة الجهاز لاحقًا (مثلاً بعد انقطاع كهرباء بلا إنترنت)
-    prayerOffsets: {fajr:3, sunrise:0, dhuhr:2, asr:2, maghrib:6, isha:2} // تعديل يدوي بالدقائق لكل صلاة — مضبوطة افتراضيًا لتطابق جهاز Madina الرسمي بالمسجد (قورنت يدويًا في 22 أغسطس 2026)
+    prayerOffsets: {fajr:3, sunrise:0, dhuhr:2, asr:2, maghrib:6, isha:2}, // تعديل يدوي بالدقائق لكل صلاة — مضبوطة افتراضيًا لتطابق جهاز Madina الرسمي بالمسجد (قورنت يدويًا في 22 أغسطس 2026)
+    remoteContent: [], // آيات/أحاديث إضافية يتم تنزيلها دوريًا من الإنترنت لتجديد المحتوى ومحاربة التكرار
+    remoteContentLastSync: null, // آخر تاريخ (yyyy-mm-dd) تمت فيه مزامنة ناجحة لقائمة المحتوى عبر الإنترنت
   };
 }
 
@@ -834,6 +873,11 @@ function fmtHMS(ms){
   if(ms<0) ms=0;
   const t=Math.floor(ms/1000);
   return `${String(Math.floor(t/3600)).padStart(2,"0")}:${String(Math.floor((t%3600)/60)).padStart(2,"0")}:${String(t%60).padStart(2,"0")}`;
+}
+function fmtMS(ms){
+  if(ms<0) ms=0;
+  const t=Math.floor(ms/1000);
+  return `${String(Math.floor(t/60)).padStart(2,"0")}:${String(t%60).padStart(2,"0")}`;
 }
 function gregorianToHijriApprox(date){
   const jd = Math.floor((date.getTime()/86400000) + 2440587.5);
@@ -979,12 +1023,22 @@ function updateClock(now){
   return hij;
 }
 
-/* ============================================================
-   الصلاة القادمة + العد التنازلي + الإطفاء
-   ============================================================ */
+const ADHKAR = [
+  { title:"الاستغفار", text:"أَسْتَغْفِرُ اللَّهَ (×٣)\nاللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ" },
+  { title:"التوحيد", text:"لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ\nاللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ، وَلَا مُعْطِيَ لِمَا مَنَعْتَ، وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ" },
+  { title:"آية الكرسي", text:"اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ" },
+  { title:"التسبيح والتحميد والتكبير", text:"سُبْحَانَ اللَّهِ (×٣٣)\nالْحَمْدُ لِلَّهِ (×٣٣)\nاللَّهُ أَكْبَرُ (×٣٣)\nثم تمام المائة:\nلَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ" },
+  { title:"المعوذات", text:"قُلْ هُوَ اللَّهُ أَحَدٌ (سورة الإخلاص)\nقُلْ أَعُوذُ بِرَبِّ الْفَلَقِ (سورة الفلق)\nقُلْ أَعُوذُ بِرَبِّ النَّاسِ (سورة الناس)" }
+];
+
 let adhanFlashUntil = 0; // طابع زمني (ms): إلى متى يستمر وميض "الأذان" بملء الشاشة
+let adhkarUntil = 0;     // طابع زمني (ms): إلى متى تستمر شاشة أذكار ما بعد الصلاة
+let adhkarStart = 0;     // متى بدأت شاشة الأذكار (لحساب أي ذكر يُعرض الآن)
+let wasInPrayer = false; // لتتبع لحظة انتهاء الصلاة وبدء الأذكار مباشرة
+const ADHKAR_PAGE_MS = 26000; // مدة عرض كل ذكر (ثانية تقريبًا)
+
 function triggerAdhanFlash(key){
-  adhanFlashUntil = Date.now() + 120000; // دقيقتان (مدة الأذان تقريبًا) وميض بملء الشاشة، له الأولوية على أي محتوى آخر
+  adhanFlashUntil = Date.now() + 20000; // 20 ثانية وميض بملء الشاشة، له الأولوية على أي محتوى آخر
   document.getElementById("adhanFlashPrayer").textContent = prayerNamesAr[key];
   // إخفاء أي صورة/نص ظاهر حاليًا فورًا لإعطاء الأولوية الكاملة للأذان
   document.getElementById("photoSlide").classList.remove("show");
@@ -1038,12 +1092,31 @@ function updatePrayers(now){
   }
   blackout.classList.toggle("show", inPrayer);
 
+  // عند انتقال الحالة من "داخل الصلاة" إلى "انتهت الصلاة" مباشرة: أطلق شاشة أذكار ما بعد الصلاة
+  if(wasInPrayer && !inPrayer){
+    adhkarStart = Date.now();
+    adhkarUntil = adhkarStart + ADHKAR.length * ADHKAR_PAGE_MS;
+    document.getElementById("photoSlide").classList.remove("show");
+    document.getElementById("textSlide").classList.remove("show","slide-ayah","slide-hadith");
+  }
+  wasInPrayer = inPrayer;
+
+  const adhkarFull = document.getElementById("adhkarFull");
+  const showAdhkar = Date.now() < adhkarUntil && !inPrayer && !inAdhanFlash;
+  adhkarFull.classList.toggle("show", showAdhkar);
+  if(showAdhkar){
+    const idx = Math.min(ADHKAR.length-1, Math.floor((Date.now()-adhkarStart)/ADHKAR_PAGE_MS));
+    const item = ADHKAR[idx];
+    document.getElementById("adhkarTitle").textContent = item.title;
+    document.getElementById("adhkarText").textContent = item.text;
+  }
+
   /* العداد التنازلي بملء الشاشة بين الأذان والإقامة (يظهر بعد انتهاء وميض الأذان) */
   const showIqamaFull = inIqamaGap && !inAdhanFlash && !inPrayer;
   iqamaFull.classList.toggle("show", showIqamaFull);
   if(showIqamaFull){
     document.getElementById("iqamaFullPrayer").textContent = prayerNamesAr[gapKey];
-    document.getElementById("iqamaFullCount").textContent = fmtHMS(gapIqamaDate-now);
+    document.getElementById("iqamaFullCount").textContent = fmtMS(gapIqamaDate-now);
   }
 }
 
@@ -1081,7 +1154,8 @@ function escapeHtml(str){
 function buildMarqueeHTML(){
   const activeContent = state.content.filter(c=>c.on).map(c=>({cat:c.cat, txt:c.txt}));
   const anns = state.announcements.map(a=>({cat:"إعلان", txt:a.txt}));
-  let items = [...activeContent, ...anns];
+  const remote = (state.remoteContent||[]).map(c=>({cat:c.cat, txt:c.txt}));
+  let items = [...activeContent, ...anns, ...remote];
   if(state.occasionContentEnabled !== false){
     const now = new Date();
     const hijToday = gregorianToHijriCorrected(now);
@@ -1137,6 +1211,7 @@ function buildRotationQueue(){
   state.images.forEach(im => queue.push({type:"image", data:im.data}));
   state.content.filter(c=>c.on).forEach(c => queue.push({type:"text", cat:c.cat, txt:c.txt}));
   state.announcements.forEach(a => queue.push({type:"text", cat:"إعلان", txt:a.txt}));
+  (state.remoteContent||[]).forEach(c => queue.push({type:"text", cat:c.cat, txt:c.txt, source:c.source}));
   if(state.occasionContentEnabled !== false){
     const now = new Date();
     const hijToday = gregorianToHijriCorrected(now);
@@ -1150,6 +1225,7 @@ function showFullscreenSlide(){
   if(document.getElementById("blackout").classList.contains("show")) return; // لا تتداخل مع وقت الصلاة
   if(document.getElementById("adhanFlash").classList.contains("show")) return; // الأذان له الأولوية القصوى
   if(document.getElementById("iqamaFull").classList.contains("show")) return; // ولا مع عداد الإقامة بملء الشاشة
+  if(document.getElementById("adhkarFull").classList.contains("show")) return; // ولا مع أذكار ما بعد الصلاة
   if(document.getElementById("clockErrorBanner").classList.contains("show")) return; // لا تعرض محتوى مناسبات بناءً على ساعة خاطئة
   const queue = buildRotationQueue();
   if(queue.length===0) return;
@@ -1182,6 +1258,31 @@ trySyncHijriOffset(); // محاولة مزامنة فورية عند فتح ال
 setInterval(trySyncHijriOffset, 3600000); // إعادة المحاولة كل ساعة (تلقائيًا تتجاهل نفسها لو نفس اليوم أو بلا إنترنت)
 trySyncYearlyTimes(); // تحميل جدول مواقيت السنة كاملة تلقائيًا بلا أي تدخل، إن توفر إنترنت ولم تكن محدّثة لهذه السنة
 setInterval(trySyncYearlyTimes, 3600000); // إعادة المحاولة كل ساعة (تتجاهل نفسها تلقائيًا إن كانت محدّثة بالفعل أو بلا إنترنت)
+
+/* ============================================================
+   تحديث دوري لقائمة الآيات والأحاديث من الإنترنت (content-pool.json)
+   كلما توفرت فرصة اتصال، لتجديد المحتوى ومحاربة التكرار والملل.
+   يعمل بصمت في الخلفية، ولا يزيل أي محتوى محلي أضافه المستخدم بنفسه.
+   ============================================================ */
+async function trySyncRemoteContent(){
+  if(!navigator.onLine) return;
+  const now = new Date();
+  const todayKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+  if(state.remoteContentLastSync === todayKey) return; // تمت المزامنة اليوم بالفعل
+  try{
+    const res = await fetch("./content-pool.json", { cache:"no-store" });
+    if(!res.ok) return;
+    const data = await res.json();
+    if(!data || !Array.isArray(data.items)) return;
+    state.remoteContent = data.items.map(it => ({ cat: it.cat||"", txt: it.txt||"", source: it.source||"" }))
+      .filter(it => it.txt);
+    state.remoteContentLastSync = todayKey;
+    saveState();
+    rebuildTicker();
+  }catch(e){ /* بلا إنترنت أو فشل الجلب — نتجاهل بصمت ونعيد المحاولة لاحقًا */ }
+}
+trySyncRemoteContent();
+setInterval(trySyncRemoteContent, 3600000); // إعادة المحاولة كل ساعة (تتجاهل نفسها تلقائيًا إن تمت اليوم بالفعل أو بلا إنترنت)
 setInterval(rebuildTicker, 3600000); // تحديث الشريط كل ساعة ليعكس أي تغيّر في المناسبة النشطة
 
 /* ============================================================
