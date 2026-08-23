@@ -2,7 +2,11 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a2e2b">
 <title>شاشة المسجد</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -20,6 +24,7 @@
 
   #stage{position:relative; width:100vw; height:100vh; display:flex; flex-direction:column;
     align-items:center; justify-content:space-between; overflow-y:auto; scrollbar-width:none;
+    padding-bottom:110px;
     padding-bottom:var(--ticker-h, 54px);
     background:radial-gradient(ellipse at 50% -10%, var(--bg-mid) 0%, var(--bg-deep) 55%, var(--bg-deep-night) 100%);
     transition:background 3s ease;}
@@ -70,7 +75,7 @@
 
   #mihrabWrap{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center;
     margin-top:clamp(2px,1vh,6px); margin-bottom:clamp(18px,3.5vh,34px);}
-  #mihrab{position:relative; width:clamp(320px,40vh,470px); height:clamp(330px,45vh,510px); border:3px solid var(--gold); border-bottom:none;
+  #mihrab{position:relative; width:340px; height:380px; width:clamp(320px,40vh,470px); height:clamp(330px,45vh,510px); border:3px solid var(--gold); border-bottom:none;
     border-radius:190px 190px 18px 18px;
     background:linear-gradient(180deg, rgba(201,162,39,0.08) 0%, rgba(201,162,39,0.02) 60%, transparent 100%);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -95,14 +100,14 @@
   .tickerSep{display:inline-block; color:var(--gold); opacity:0.6; font-size:1rem;}
   @keyframes marqueeScroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
 
-  .prayerRail{position:absolute; top:calc(50% - (var(--ticker-h, 110px) / 4)); transform:translateY(-50%); z-index:2;
-    display:flex; flex-direction:column; gap:clamp(10px,2vh,22px);}
-  .prayerRail.right{right:clamp(18px,3.2vw,60px);}
-  .prayerRail.left{left:clamp(18px,3.2vw,60px);}
-  .prayerCard{width:clamp(160px,17vw,250px); background:rgba(255,255,255,0.04); border:1px solid rgba(201,162,39,0.35);
-    border-radius:16px; padding:clamp(12px,2.2vh,20px) 9px; text-align:center; transition:all .4s ease;}
-  .prayerCard .pName{font-size:clamp(2.6rem,5.2vh,3.4rem); color:var(--gold-light); margin-bottom:7px;}
-  .prayerCard .pTime{font-size:clamp(2.6rem,5.4vh,3.5rem); font-weight:bold; color:var(--cream); font-variant-numeric:tabular-nums; direction:ltr;}
+  .prayerRail{position:absolute; top:48%; top:calc(50% - (var(--ticker-h, 110px) / 4)); transform:translateY(-50%); z-index:2;
+    display:flex; flex-direction:column; gap:14px; gap:clamp(10px,2vh,22px);}
+  .prayerRail.right{right:20px; right:clamp(18px,3.2vw,60px);}
+  .prayerRail.left{left:20px; left:clamp(18px,3.2vw,60px);}
+  .prayerCard{width:170px; width:clamp(160px,17vw,250px); background:rgba(255,255,255,0.04); border:1px solid rgba(201,162,39,0.35);
+    border-radius:16px; padding:14px 9px; padding:clamp(12px,2.2vh,20px) 9px; text-align:center; transition:all .4s ease;}
+  .prayerCard .pName{font-size:1.7rem; font-size:clamp(2.6rem,5.2vh,3.4rem); color:var(--gold-light); margin-bottom:7px;}
+  .prayerCard .pTime{font-size:1.8rem; font-size:clamp(2.6rem,5.4vh,3.5rem); font-weight:bold; color:var(--cream); font-variant-numeric:tabular-nums; direction:ltr;}
   .prayerCard.active{background:linear-gradient(180deg, rgba(201,162,39,0.28), rgba(201,162,39,0.08));
     border-color:var(--gold); transform:scale(1.08); box-shadow:0 8px 24px rgba(201,162,39,0.25);}
   .prayerCard.active .pName{color:var(--gold);}
@@ -133,7 +138,7 @@
   #clockErrorBanner .bTitle{font-size:clamp(2rem,5vh,3.2rem); margin-bottom:20px;}
   #clockErrorBanner .bSub{font-size:clamp(1.1rem,2.4vh,1.6rem); color:var(--cream); opacity:0.85; max-width:900px; line-height:1.6;}
 
-  #blackout .phoneIcon{font-size:clamp(4.2rem,11vh,7rem); margin-bottom:20px; color:#ffffff; line-height:0;}
+  #blackout .phoneIcon{font-size:clamp(6rem,15vh,9.5rem); margin-bottom:24px; color:#ffffff; line-height:0;}
 
   /* أذان: وميض بملء الشاشة، له الأولوية على أي محتوى آخر (صور/خلفية) */
   #adhanFlash{position:fixed; top:0; right:0; bottom:0; left:0; z-index:92; display:none;
@@ -141,9 +146,9 @@
     padding-top:8vh;}
   #adhanFlash.show{display:flex;}
   #adhanFlash .flashWord{font-family:"Amiri","Traditional Arabic","Arabic Typesetting",serif;
-    font-size:clamp(5rem,19vh,14rem); font-weight:bold; color:#ffffff;
-    animation:adhanBlink 1s steps(1,end) infinite; text-shadow:0 0 50px rgba(255,255,255,0.55);}
-  #adhanFlash .flashPrayer{font-size:clamp(2rem,6vh,4rem); color:var(--cream); margin-top:20px;}
+    font-size:clamp(7rem,26vh,19rem); font-weight:bold; color:#ffffff;
+    animation:adhanBlink 1s steps(1,end) infinite; text-shadow:0 0 60px rgba(255,255,255,0.6);}
+  #adhanFlash .flashPrayer{font-size:clamp(2.6rem,7vh,5rem); color:var(--cream); margin-top:26px;}
   @keyframes adhanBlink{0%,49%{opacity:1;} 50%,100%{opacity:0.15;}}
 
   /* عداد تنازلي بملء الشاشة بين الأذان والإقامة */
@@ -151,11 +156,11 @@
     align-items:center; justify-content:center; flex-direction:column; text-align:center;
     background:radial-gradient(ellipse at 50% 30%, var(--bg-mid) 0%, var(--bg-deep) 55%, var(--bg-deep-night) 100%);}
   #iqamaFull.show{display:flex;}
-  #iqamaFull .ifLabel{font-size:clamp(1.8rem,4vh,2.6rem); color:var(--gold-light); margin-bottom:10px;}
-  #iqamaFull .ifPrayer{font-size:clamp(2.6rem,7vh,4.6rem); font-weight:bold; color:var(--cream); margin-bottom:20px;}
-  #iqamaFull .ifCount{font-size:clamp(5rem,18vh,11rem); font-weight:bold; color:var(--gold);
-    font-variant-numeric:tabular-nums; direction:ltr; text-shadow:0 0 40px rgba(201,162,39,0.4);}
-  #iqamaFull .ifSub{font-size:clamp(1.3rem,2.6vh,1.8rem); color:var(--cream); opacity:0.7; margin-top:16px;}
+  #iqamaFull .ifLabel{font-size:clamp(2.4rem,5.4vh,3.6rem); color:var(--gold-light); margin-bottom:14px;}
+  #iqamaFull .ifPrayer{font-size:clamp(3.4rem,9vh,6rem); font-weight:bold; color:var(--cream); margin-bottom:26px;}
+  #iqamaFull .ifCount{font-size:clamp(7rem,24vh,15rem); font-weight:bold; color:var(--gold);
+    font-variant-numeric:tabular-nums; direction:ltr; text-shadow:0 0 50px rgba(201,162,39,0.5);}
+
 
   /* شريط الوقت المتبقي للصلاة القادمة */
   #nextPrayerBar{position:fixed; top:0; right:0; left:0; height:7px; z-index:20; background:rgba(255,255,255,0.08);}
@@ -167,10 +172,11 @@
     align-items:center; justify-content:center; flex-direction:column; text-align:center;
     padding:6vh 9vw; background:radial-gradient(ellipse at 50% 20%, var(--bg-mid) 0%, var(--bg-deep) 55%, var(--bg-deep-night) 100%);}
   #adhkarFull.show{display:flex;}
-  #adhkarFull .afLabel{font-size:clamp(1.5rem,3vh,2.1rem); color:var(--gold-light); margin-bottom:8px; opacity:0.85;}
-  #adhkarFull .afTitle{font-size:clamp(1.9rem,4vh,2.9rem); font-weight:bold; color:var(--gold); margin-bottom:26px;}
-  #adhkarFull .afText{font-size:clamp(1.6rem,3.9vh,2.7rem); line-height:2.1; color:var(--cream); max-width:1150px;
+  #adhkarFull .afLabel{font-size:clamp(1.8rem,3.6vh,2.5rem); color:var(--gold-light); margin-bottom:10px; opacity:0.85;}
+  #adhkarFull .afTitle{font-size:clamp(2.4rem,5.2vh,3.7rem); font-weight:bold; color:var(--gold); margin-bottom:30px;}
+  #adhkarFull .afText{font-size:clamp(2rem,4.8vh,3.3rem); line-height:2.15; color:var(--cream); max-width:1200px;
     font-weight:600; white-space:pre-line;}
+  #adhkarFull .afNote{font-size:clamp(1.3rem,2.6vh,1.8rem); color:var(--gold-light); opacity:0.9; margin-top:28px;}
 
   /* full-screen photo slide mode */
   #photoSlide{position:fixed; top:0; right:0; bottom:0; left:0; z-index:30; display:none;
@@ -302,6 +308,26 @@
   @media (max-width:800px){
     #mihrab{width:230px; height:270px;} #clockTime{font-size:3rem;} #nextPrayerName{font-size:1.8rem;}
     #countdown{font-size:2rem;} #mosqueName{font-size:1.5rem;}
+    .prayerCard{width:120px; padding:8px 6px;}
+    .prayerCard .pName{font-size:1.3rem;} .prayerCard .pTime{font-size:1.5rem;}
+    .prayerRail.right{right:8px;} .prayerRail.left{left:8px;}
+    .prayerRail{gap:8px;}
+  }
+  @media (max-width:600px){
+    #mihrab{width:170px; height:200px;}
+    .prayerCard{width:88px; padding:6px 4px; border-radius:10px;}
+    .prayerCard .pName{font-size:1rem; margin-bottom:2px;} .prayerCard .pTime{font-size:1.15rem;}
+    .prayerRail.right{right:4px;} .prayerRail.left{left:4px;}
+    .prayerRail{gap:5px;}
+    #mosqueName{font-size:1.1rem;} #clockTime{font-size:2.2rem;}
+  }
+  @media (max-width:420px){
+    /* شاشات ضيقة جدًا: تصغير أقصى مع إبقاء نفس الترتيب لتفادي أي تراكب */
+    #mihrab{width:130px; height:155px;}
+    .prayerCard{width:62px; padding:4px 3px; border-radius:8px;}
+    .prayerCard .pName{font-size:0.78rem;} .prayerCard .pTime{font-size:0.9rem;}
+    .prayerRail{gap:4px;} .prayerRail.right{right:2px;} .prayerRail.left{left:2px;}
+    #mosqueName{font-size:0.9rem;} #clockTime{font-size:1.7rem;}
   }
 </style>
 </head>
@@ -382,16 +408,16 @@
 </div>
 
 <div id="iqamaFull">
-  <div class="ifLabel">حان أذان</div>
   <div class="ifPrayer" id="iqamaFullPrayer">--</div>
+  <div class="ifLabel">الإقامة بعد:</div>
   <div class="ifCount" id="iqamaFullCount">--:--</div>
-  <div class="ifSub">متبقٍ حتى الإقامة</div>
 </div>
 
 <div id="adhkarFull">
   <div class="afLabel">أذكار ما بعد الصلاة</div>
   <div class="afTitle" id="adhkarTitle">--</div>
   <div class="afText" id="adhkarText">--</div>
+  <div class="afNote" id="adhkarNote"></div>
 </div>
 
 <div id="clockErrorBanner">
@@ -1025,16 +1051,21 @@ function updateClock(now){
 
 const ADHKAR = [
   { title:"الاستغفار", text:"أَسْتَغْفِرُ اللَّهَ (×٣)\nاللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ" },
-  { title:"التوحيد", text:"لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ\nاللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ، وَلَا مُعْطِيَ لِمَا مَنَعْتَ، وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ" },
-  { title:"آية الكرسي", text:"اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ" },
-  { title:"التسبيح والتحميد والتكبير", text:"سُبْحَانَ اللَّهِ (×٣٣)\nالْحَمْدُ لِلَّهِ (×٣٣)\nاللَّهُ أَكْبَرُ (×٣٣)\nثم تمام المائة:\nلَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ" },
-  { title:"المعوذات", text:"قُلْ هُوَ اللَّهُ أَحَدٌ (سورة الإخلاص)\nقُلْ أَعُوذُ بِرَبِّ الْفَلَقِ (سورة الفلق)\nقُلْ أَعُوذُ بِرَبِّ النَّاسِ (سورة الناس)" }
+  { title:"التوحيد", text:"لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، يُحْيِي وَيُمِيتُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ",
+    noteFajrMaghrib:"تُقال ١٠ مرات بعد الفجر والمغرب خاصة", noteOther:"تُقال مرة واحدة بعد باقي الصلوات" },
+  { title:"آية الكرسي", text:"اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
+    noteFajrMaghrib:"تُقرأ مرة واحدة بعد كل صلاة مكتوبة", noteOther:"تُقرأ مرة واحدة بعد كل صلاة مكتوبة" },
+  { title:"التسبيح والتحميد والتكبير", text:"سُبْحَانَ اللَّهِ (×٣٣)\nالْحَمْدُ لِلَّهِ (×٣٣)\nاللَّهُ أَكْبَرُ (×٣٣)\nثم تمام المائة:\nلَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ",
+    noteFajrMaghrib:"تُقال هذه الأذكار (٣٣، ٣٣، ٣٣) بعد كل صلاة مكتوبة", noteOther:"تُقال هذه الأذكار (٣٣، ٣٣، ٣٣) بعد كل صلاة مكتوبة" },
+  { title:"المعوذات", text:"قُلْ هُوَ اللَّهُ أَحَدٌ (سورة الإخلاص)\nقُلْ أَعُوذُ بِرَبِّ الْفَلَقِ (سورة الفلق)\nقُلْ أَعُوذُ بِرَبِّ النَّاسِ (سورة الناس)",
+    noteFajrMaghrib:"تُقرأ ٣ مرات بعد الفجر والمغرب خاصة", noteOther:"تُقرأ مرة واحدة بعد باقي الصلوات" }
 ];
 
 let adhanFlashUntil = 0; // طابع زمني (ms): إلى متى يستمر وميض "الأذان" بملء الشاشة
 let adhkarUntil = 0;     // طابع زمني (ms): إلى متى تستمر شاشة أذكار ما بعد الصلاة
 let adhkarStart = 0;     // متى بدأت شاشة الأذكار (لحساب أي ذكر يُعرض الآن)
 let wasInPrayer = false; // لتتبع لحظة انتهاء الصلاة وبدء الأذكار مباشرة
+let lastPrayerKey = null; // آخر صلاة كانت قيد الإقامة، لمعرفة إن كانت الفجر أو المغرب عند عرض الأذكار
 const ADHKAR_PAGE_MS = 26000; // مدة عرض كل ذكر (ثانية تقريبًا)
 
 function triggerAdhanFlash(key){
@@ -1081,16 +1112,17 @@ function updatePrayers(now){
   const inAdhanFlash = Date.now() < adhanFlashUntil;
   adhanFlash.classList.toggle("show", inAdhanFlash);
 
-  let inPrayer=false;
+  let inPrayer=false, inPrayerKey=null;
   let inIqamaGap=false, gapKey=null, gapIqamaDate=null;
   for(const k of order){
     const adhan = toDateToday(times[k]);
     const iqama = new Date(adhan.getTime() + (state.iqamaGap[k]||15)*60000);
     const end = new Date(iqama.getTime() + (state.prayerDuration||12)*60000);
-    if(now>=iqama && now<end){ inPrayer=true; break; }
+    if(now>=iqama && now<end){ inPrayer=true; inPrayerKey=k; break; }
     if(now>=adhan && now<iqama){ inIqamaGap=true; gapKey=k; gapIqamaDate=iqama; }
   }
   blackout.classList.toggle("show", inPrayer);
+  if(inPrayer) lastPrayerKey = inPrayerKey;
 
   // عند انتقال الحالة من "داخل الصلاة" إلى "انتهت الصلاة" مباشرة: أطلق شاشة أذكار ما بعد الصلاة
   if(wasInPrayer && !inPrayer){
@@ -1107,15 +1139,17 @@ function updatePrayers(now){
   if(showAdhkar){
     const idx = Math.min(ADHKAR.length-1, Math.floor((Date.now()-adhkarStart)/ADHKAR_PAGE_MS));
     const item = ADHKAR[idx];
+    const isFajrMaghrib = (lastPrayerKey==="fajr" || lastPrayerKey==="maghrib");
     document.getElementById("adhkarTitle").textContent = item.title;
     document.getElementById("adhkarText").textContent = item.text;
+    document.getElementById("adhkarNote").textContent = (isFajrMaghrib ? item.noteFajrMaghrib : item.noteOther) || "";
   }
 
   /* العداد التنازلي بملء الشاشة بين الأذان والإقامة (يظهر بعد انتهاء وميض الأذان) */
   const showIqamaFull = inIqamaGap && !inAdhanFlash && !inPrayer;
   iqamaFull.classList.toggle("show", showIqamaFull);
   if(showIqamaFull){
-    document.getElementById("iqamaFullPrayer").textContent = prayerNamesAr[gapKey];
+    document.getElementById("iqamaFullPrayer").textContent = "صلاة " + prayerNamesAr[gapKey];
     document.getElementById("iqamaFullCount").textContent = fmtMS(gapIqamaDate-now);
   }
 }
@@ -1472,6 +1506,27 @@ tick();
 setInterval(tick, 1000);
 rebuildTicker();
 window.addEventListener("resize", ()=>{ rebuildTicker(); });
+
+/* ============================================================
+   وضعية ملء الشاشة تلقائيًا عند فتح التطبيق (خاصة على الهاتف)
+   المتصفحات تتطلب تفاعل المستخدم لتفعيل ملء الشاشة، لذا نحاول
+   فورًا (يعمل مباشرة عند التشغيل كتطبيق مثبت PWA)، ونعيد المحاولة
+   عند أول لمسة/ضغطة إن كان لا يزال داخل تبويب متصفح عادي
+   ============================================================ */
+function requestFullscreenSafely(){
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+  if(req && !document.fullscreenElement){
+    req.call(el).catch(()=>{});
+  }
+}
+requestFullscreenSafely();
+["touchstart","click"].forEach(evt=>{
+  document.addEventListener(evt, function onceHandler(){
+    requestFullscreenSafely();
+    document.removeEventListener(evt, onceHandler);
+  }, { once:true });
+});
 
 /* ============================================================
    لوحة التحكم - عرض/إخفاء
