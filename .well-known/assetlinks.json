@@ -1,0 +1,8 @@
+[{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+          "namespace": "android_app",
+          "package_name": "io.github.drchoucha.twa",
+          "sha256_cert_fingerprints": ["CF:42:99:67:FD:5B:DB:D3:57:D2:F0:16:C4:A2:5A:BA:50:7D:70:F8:AA:FB:44:13:AB:12:81:D9:C0:9F:09:90"]
+    }
+}]
