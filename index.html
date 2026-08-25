@@ -23,7 +23,7 @@
     color:var(--cream); --ticker-h:110px;}
 
   #stage{position:relative; width:100vw; height:100vh; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; gap:clamp(4px,0.8vh,10px); overflow-y:auto; scrollbar-width:none;
+    align-items:center; justify-content:center; gap:clamp(4px,0.8vh,10px); overflow-y:auto; overflow-x:hidden; scrollbar-width:none;
     padding-bottom:110px;
     padding-bottom:var(--ticker-h, 54px);
     background:radial-gradient(ellipse at 50% -10%, var(--bg-mid) 0%, var(--bg-deep) 55%, var(--bg-deep-night) 100%);
@@ -105,7 +105,7 @@
   .tickerSep{display:inline-block; color:var(--gold); opacity:0.6; font-size:1rem;}
   @keyframes marqueeScroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
 
-  #prayerRow{position:relative; z-index:2; display:flex; flex-direction:row; flex-wrap:wrap;
+  #prayerRow{position:relative; z-index:2; display:flex; flex-direction:row; flex-wrap:nowrap;
     justify-content:center; align-items:stretch; gap:clamp(8px,1.6vw,20px);
     width:100%; max-width:1400px; margin:0 auto; padding:0 clamp(10px,2vw,30px);}
   .prayerCard{width:clamp(120px,13vw,190px); background:rgba(255,255,255,0.04); border:1px solid rgba(201,162,39,0.35);
@@ -1205,10 +1205,14 @@ function syncTickerHeight(){
 }
 
 /* ============================================================
-   تحجيم تلقائي ذكي: يقيس الارتفاع الفعلي للمحتوى مقابل المساحة
-   المتاحة فوق الشريط، ويصغّر كل شيء معًا تناسبيًا (نص وبطاقات
-   وإطار) تلقائيًا فقط إن لم يتسع — بلا أي حاجة لتعديل يدوي
-   للأحجام مستقبلًا مهما اختلفت الشاشة أو دقتها.
+   تحجيم تلقائي ذكي: يقيس الارتفاع والعرض الفعليين للمحتوى مقابل
+   المساحة المتاحة (فوق الشريط، وعرض الشاشة كاملاً)، ويصغّر كل شيء
+   معًا تناسبيًا (نص وبطاقات وإطار) تلقائيًا فقط إن لم يتسع — بلا أي
+   حاجة لتعديل يدوي للأحجام مستقبلًا مهما اختلفت الشاشة أو دقتها.
+   إضافة فحص العرض (وليس فقط الارتفاع) تمنع تحديدًا تراكب/خروج
+   صف مواقيت الصلاة عن حدود الشاشة على الأجهزة الضيقة (مثل جهاز
+   "المدينة")، لأن صف المواقيت أصبح دائمًا سطرًا واحدًا (بلا التفاف)
+   ويُصغَّر بدل أن يلتف لسطر ثانٍ أو يفيض خارج الشاشة.
    ============================================================ */
 function fitStageContent(){
   const content = document.getElementById("stageContent");
@@ -1217,13 +1221,18 @@ function fitStageContent(){
   content.style.transform = "scale(1)"; // إعادة الضبط أولًا للقياس الصحيح
   const tickerH = document.getElementById("tickerWrap").offsetHeight + 22;
   const availableH = stage.clientHeight - tickerH - 10; // هامش أمان بسيط
+  const availableW = stage.clientWidth - 10; // هامش أمان بسيط للعرض
   const neededH = content.scrollHeight;
+  const neededW = content.scrollWidth;
+  let scale = 1;
   if(neededH > availableH && availableH > 50){
-    const scale = Math.max(0.55, availableH / neededH); // لا يصغر أكثر من اللازم لبقاء القراءة ممكنة
-    content.style.transform = `scale(${scale})`;
-  }else{
-    content.style.transform = "scale(1)";
+    scale = Math.min(scale, availableH / neededH);
   }
+  if(neededW > availableW && availableW > 50){
+    scale = Math.min(scale, availableW / neededW);
+  }
+  scale = Math.max(0.55, scale); // لا يصغر أكثر من اللازم لبقاء القراءة ممكنة
+  content.style.transform = scale < 1 ? `scale(${scale})` : "scale(1)";
 }
 window.addEventListener("resize", ()=> fitStageContent());
 function measureAndApplyTickerSpeed(groupA, track, attemptsLeft){
