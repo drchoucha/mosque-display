@@ -599,9 +599,21 @@
    ============================================================ */
 if("serviceWorker" in navigator){
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch(()=>{
+    navigator.serviceWorker.register("./service-worker.js").then(reg=>{
+      // نتحقق دوريًا من وجود نسخة أحدث من التطبيق — مهم لأن شاشة المسجد قد تبقى مفتوحة أيامًا
+      // دون إعادة تشغيل يدوي، فلا تُتاح لها فرصة اكتشاف التحديثات الجديدة تلقائيًا
+      setInterval(()=>{ reg.update().catch(()=>{}); }, 60*60*1000); // كل ساعة
+    }).catch(()=>{
       // فشل التسجيل (مثلًا عند فتح الملف محليًا عبر file://) — لا مشكلة، يستمر التطبيق بالعمل عاديًا
     });
+  });
+  // عند تفعيل نسخة Service Worker جديدة (بعد نشر تحديث على GitHub)، نعيد تحميل الصفحة تلقائيًا
+  // لتطبيق كل الإصلاحات والصور الجديدة فورًا دون تدخل يدوي من صاحب الشاشة
+  let swRefreshed = false;
+  navigator.serviceWorker.addEventListener("controllerchange", ()=>{
+    if(swRefreshed) return;
+    swRefreshed = true;
+    location.reload();
   });
 }
 
@@ -829,6 +841,20 @@ function loadState(){
         const kept = (parsed.images||[]).filter(im=>!defaultIds.has(im.id));
         parsed.images = [...JSON.parse(JSON.stringify(DEFAULT_IMAGES)), ...kept];
         parsed.imagesVersion = IMAGES_VERSION;
+      }
+      // تنظيف الصور المكرَّرة: قد تتكرر نفس الصورة (نفس المحتوى بالضبط) إذا أُضيفت يدويًا كصورة "مخصّصة"
+      // بينما هي أصلًا موجودة كصورة افتراضية، أو بعد تحديث للتطبيق — نُبقي على أول ظهور فقط لكل محتوى،
+      // ونُفضّل إبقاء النسخة الافتراضية (id يبدأ بـ default-) إن تكرّر نفس المحتوى بالضبط بين صورة افتراضية وأخرى مخصّصة
+      if(Array.isArray(parsed.images)){
+        const byData = new Map(); // data (base64) -> الصورة المحتفَظ بها لهذا المحتوى
+        parsed.images.forEach(im=>{
+          const existing = byData.get(im.data);
+          if(!existing){ byData.set(im.data, im); return; }
+          const existingIsDefault = String(existing.id).startsWith("default-");
+          const currentIsDefault = String(im.id).startsWith("default-");
+          if(currentIsDefault && !existingIsDefault) byData.set(im.data, im);
+        });
+        parsed.images = Array.from(byData.values());
       }
       return Object.assign(defaultState(), parsed);
     }
