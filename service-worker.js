@@ -1,4 +1,4 @@
-const CACHE_NAME = "mosque-display-cache-v1";
+const CACHE_NAME = "mosque-display-cache-v2"; // تم رفع الرقم لإجبار كل الأجهزة على تفريغ الذاكرة المؤقتة القديمة وجلب أحدث نسخة
 const CORE_ASSETS = [
     "./",
     "./index.html",
