@@ -49,8 +49,10 @@
     background-size:220% auto; -webkit-background-clip:text; background-clip:text; color:transparent;
     animation:shine 6s linear infinite;}
   @keyframes shine{0%{background-position:0% 50%;} 100%{background-position:220% 50%;}}
-  #fridayBadge{display:none; margin-top:5px; font-size:clamp(1.5rem,3.1vh,1.95rem); color:var(--gold-light); letter-spacing:1px;}
+  #fridayBadge{display:none; margin-top:8px; max-width:90vw; margin-left:auto; margin-right:auto;}
   #fridayBadge.show{display:block;}
+  #fridayBadge .fbText{font-size:clamp(1.9rem,4.4vh,3rem); font-weight:bold; letter-spacing:0.5px; color:var(--gold-light); line-height:1.5;}
+  #fridayBadge .fbSource{font-size:clamp(1.1rem,2.2vh,1.5rem); color:var(--gold-light); opacity:0.8; margin-top:6px;}
   #clockWrap{margin-top:clamp(2px,0.6vh,8px); display:flex; align-items:baseline; justify-content:center; gap:14px;}
   #clockTime{font-size:clamp(4rem,10.2vh,7.6rem); font-weight:bold; color:var(--cream); letter-spacing:2px;
     text-shadow:0 0 24px rgba(201,162,39,0.35);}
@@ -184,6 +186,15 @@
     font-weight:600; white-space:pre-line;}
   #adhkarFull .afNote{font-size:clamp(1.3rem,2.6vh,1.8rem); color:var(--gold-light); opacity:0.9; margin-top:28px;}
 
+  /* تذكير الخطبة: يظهر بملء الشاشة دقيقة واحدة بعد أذان الجمعة، ثم تُطفأ الشاشة تمامًا */
+  #khutbahReminder{position:fixed; top:0; right:0; bottom:0; left:0; z-index:78; display:none;
+    align-items:center; justify-content:center; flex-direction:column; text-align:center;
+    padding:6vh 9vw; background:radial-gradient(ellipse at 50% 20%, var(--bg-mid) 0%, var(--bg-deep) 55%, var(--bg-deep-night) 100%);}
+  #khutbahReminder.show{display:flex;}
+  #khutbahReminder .krLabel{font-size:clamp(1.8rem,3.6vh,2.5rem); color:var(--gold-light); margin-bottom:22px; opacity:0.9;}
+  #khutbahReminder .krText{font-size:clamp(2.1rem,5vh,3.5rem); line-height:2.15; color:var(--cream); max-width:1250px; font-weight:600;}
+  #khutbahReminder .krSource{font-size:clamp(1.3rem,2.6vh,1.8rem); color:var(--gold-light); opacity:0.9; margin-top:30px;}
+
   /* full-screen photo slide mode */
   #photoSlide{position:fixed; top:0; right:0; bottom:0; left:0; z-index:30; display:none;
     background-size:cover; background-position:center; transition:opacity 1.2s ease;}
@@ -242,9 +253,9 @@
     cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:0.35; transition:opacity .3s;}
   #gearBtn:hover{opacity:1;}
 
-  #devCredit{position:absolute; bottom:78px; right:20px; z-index:25; font-size:0.85rem;
+  #devCredit{position:absolute; bottom:78px; right:20px; z-index:25; font-size:0.6rem;
     color:#fff; opacity:0.7; letter-spacing:0.5px; pointer-events:none;
-    background:rgba(0,0,0,0.25); padding:3px 10px; border-radius:6px;}
+    background:rgba(0,0,0,0.25); padding:2px 8px; border-radius:6px;}
 
   /* admin panel */
   #adminOverlay{position:fixed; top:0; right:0; bottom:0; left:0; z-index:100; background:rgba(0,0,0,0.6);
@@ -353,7 +364,7 @@
   <div id="stageContent">
   <div id="header">
     <div id="mosqueName">مسجد الهدى</div>
-    <div id="fridayBadge">جمعة مباركة</div>
+    <div id="fridayBadge"><div class="fbText">خَيْرُ يَوْمٍ طَلَعَتْ فِيهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div><div class="fbSource">رواه مسلم</div></div>
     <div id="dateRow"><span id="dayName">--</span><span class="dateSep">•</span><span id="hijriDate">--</span><span class="dateSep">•</span><span id="gregDate">--</span></div>
     <div id="clockWrap"><span id="clockTime">--:--</span><span id="clockMeridiem">--</span></div>
     <div id="analogClockWrap">
@@ -401,17 +412,7 @@
 
 <div id="nextPrayerBar"><div id="nextPrayerBarFill"></div></div>
 
-<div id="blackout">
-  <div class="phoneIcon">
-    <svg viewBox="0 0 100 100" width="1em" height="1em" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="30" y="8" width="40" height="84" rx="8" stroke="currentColor" stroke-width="6"/>
-      <line x1="30" y1="76" x2="70" y2="76" stroke="currentColor" stroke-width="6"/>
-      <line x1="12" y1="12" x2="88" y2="88" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
-    </svg>
-  </div>
-  <div class="bTitle">حان وقت الصلاة</div>
-  <div class="bSub">أقيمت الصلاة، يرجى إغلاق الهواتف والالتزام بالصف — رفع الله دعواتكم</div>
-</div>
+<div id="blackout"></div>
 
 <div id="adhanFlash">
   <div class="flashWord">الأذان</div>
@@ -422,6 +423,12 @@
   <div class="ifPrayer" id="iqamaFullPrayer">--</div>
   <div class="ifLabel">الإقامة بعد:</div>
   <div class="ifCount" id="iqamaFullCount">--:--</div>
+</div>
+
+<div id="khutbahReminder">
+  <div class="krLabel">والإمام يخطب يوم الجمعة</div>
+  <div class="krText">إِذَا قُلْتَ لِصَاحِبِكَ يَوْمَ الْجُمُعَةِ أَنْصِتْ، وَالْإِمَامُ يَخْطُبُ، فَقَدْ لَغَوْتَ</div>
+  <div class="krSource">متفق عليه</div>
 </div>
 
 <div id="adhkarFull">
@@ -493,6 +500,7 @@
         <div class="fieldRow"><label>العصر</label><input type="number" lang="en" id="gap-asr" min="0" max="60"></div>
         <div class="fieldRow"><label>المغرب</label><input type="number" lang="en" id="gap-maghrib" min="0" max="60"></div>
         <div class="fieldRow"><label>العشاء</label><input type="number" lang="en" id="gap-isha" min="0" max="60"></div>
+        <div class="fieldRow"><label>الجمعة (بدل الظهر)</label><input type="number" lang="en" id="gap-friday-dhuhr" min="0" max="90"></div>
 
         <div class="sectionTitle">تعديل يدوي للمواقيت المحسوبة تلقائيًا (بالدقائق، +/-)</div>
         <div class="fieldRow"><span style="font-size:.85rem; color:var(--cream); opacity:.75;">لمطابقة جهاز رسمي في المسجد أو جدول الوزارة المحلي — اضبطها مرة واحدة بمقارنة الوقتين</span></div>
@@ -802,7 +810,7 @@ function defaultState(){
     dateFormat: "dmy", // dmy | mdy | ymd
     alertSound: "tones", // tones | birds | water
     prayerTimes: { fajr:"04:12", dhuhr:"12:45", asr:"16:20", maghrib:"19:05", isha:"20:35" },
-    iqamaGap: { fajr:20, dhuhr:15, asr:15, maghrib:10, isha:15 },
+    iqamaGap: { fajr:20, dhuhr:15, asr:15, maghrib:10, isha:15, fridayDhuhr:20 }, // fridayDhuhr: فارق الإقامة الخاص بصلاة الجمعة (20 دقيقة افتراضيًا)
     prayerDuration: 12,
     location: { wilayaIndex:2, lat:33.7848, lng:3.1328, tz:1 }, // default: قصر الحيران، ولاية الأغواط
     content: JSON.parse(JSON.stringify(DEFAULT_CONTENT)),
@@ -941,6 +949,12 @@ const order = ["fajr","dhuhr","asr","maghrib","isha"];
 const YEARLY_DATA_VERSION = 2; // زيادة هذا الرقم تجبر التطبيق على إعادة تحميل الجدول السنوي (مثلاً بعد إضافة حقل جديد كالشروق)
 const HIJRI_SYNC_VERSION = 2; // زيادة هذا الرقم تجبر إعادة مزامنة التاريخ الهجري فورًا بغض النظر عن مزامنات اليوم السابقة
 const prayerNamesAr = { fajr:"الفجر", dhuhr:"الظهر", asr:"العصر", maghrib:"المغرب", isha:"العشاء" };
+// اسم العرض للصلاة: الظهر يصبح "الجمعة" يوم الجمعة تحديدًا
+function prayerLabel(key, date){
+  const d = date || new Date();
+  if(key==="dhuhr" && d.getDay()===5) return "الجمعة";
+  return prayerNamesAr[key];
+}
 
 function toDateToday(hhmm){
   const [h,m] = hhmm.split(":").map(Number);
@@ -1122,7 +1136,7 @@ const ADHKAR_PAGE_MS = 26000; // مدة عرض كل ذكر (ثانية تقري�
 
 function triggerAdhanFlash(key){
   adhanFlashUntil = Date.now() + 20000; // 20 ثانية وميض بملء الشاشة، له الأولوية على أي محتوى آخر
-  document.getElementById("adhanFlashPrayer").textContent = prayerNamesAr[key];
+  document.getElementById("adhanFlashPrayer").textContent = prayerLabel(key);
   // إخفاء أي صورة/نص ظاهر حاليًا فورًا لإعطاء الأولوية الكاملة للأذان
   document.getElementById("photoSlide").classList.remove("show");
   document.getElementById("textSlide").classList.remove("show","slide-ayah","slide-hadith");
@@ -1135,14 +1149,17 @@ function updatePrayers(now){
   let isTomorrow = false;
   if(!next){ next = { key:"fajr", date: new Date(toDateToday(times.fajr).getTime()+24*3600000) }; isTomorrow=true; }
 
-  document.getElementById("nextPrayerName").textContent = prayerNamesAr[next.key];
+  document.getElementById("nextPrayerName").textContent = prayerLabel(next.key, next.date);
   document.getElementById("countdown").textContent = fmtHMS(next.date-now);
 
   todays.forEach(p=>{
     const card = document.querySelector(`.prayerCard[data-key="${p.key}"]`);
+    card.querySelector(".pName").textContent = prayerLabel(p.key, p.date);
     card.querySelector(".pTime").textContent = times[p.key];
     const gapEl = card.querySelector(".pGap");
-    if(gapEl) gapEl.textContent = `+${state.iqamaGap[p.key]||15} د`;
+    const isFridayDhuhr = p.key==="dhuhr" && p.date.getDay()===5;
+    const gapVal = isFridayDhuhr ? (state.iqamaGap.fridayDhuhr||20) : (state.iqamaGap[p.key]||15);
+    if(gapEl) gapEl.textContent = `+${gapVal} د`;
     const isActive = (p.key===next.key) && !isTomorrow;
     card.classList.toggle("active", isActive);
     card.classList.toggle("passed", p.date<now && !isActive);
@@ -1167,16 +1184,26 @@ function updatePrayers(now){
   adhanFlash.classList.toggle("show", inAdhanFlash);
 
   let inPrayer=false, inPrayerKey=null;
-  let inIqamaGap=false, gapKey=null, gapIqamaDate=null;
+  let inIqamaGap=false, gapKey=null, gapIqamaDate=null, gapAdhanDate=null;
   for(const k of order){
     const adhan = toDateToday(times[k]);
-    const iqama = new Date(adhan.getTime() + (state.iqamaGap[k]||15)*60000);
+    const gapMin = (k==="dhuhr" && adhan.getDay()===5) ? (state.iqamaGap.fridayDhuhr||20) : (state.iqamaGap[k]||15);
+    const iqama = new Date(adhan.getTime() + gapMin*60000);
     const end = new Date(iqama.getTime() + (state.prayerDuration||12)*60000);
     if(now>=iqama && now<end){ inPrayer=true; inPrayerKey=k; break; }
-    if(now>=adhan && now<iqama){ inIqamaGap=true; gapKey=k; gapIqamaDate=iqama; }
+    if(now>=adhan && now<iqama){ inIqamaGap=true; gapKey=k; gapIqamaDate=iqama; gapAdhanDate=adhan; }
   }
-  blackout.classList.toggle("show", inPrayer);
+
+  // خطبة الجمعة: بعد أذان الجمعة تحديدًا (الظهر يوم الجمعة)، يظهر حديث "أنصت" دقيقة واحدة، ثم تُطفأ الشاشة تمامًا حتى الإقامة
+  const isFridayKhutbahGap = inIqamaGap && gapKey==="dhuhr" && gapAdhanDate && gapAdhanDate.getDay()===5;
+  const khutbahReminderEnd = isFridayKhutbahGap ? new Date(gapAdhanDate.getTime()+60000) : null;
+  const inKhutbahReminder = isFridayKhutbahGap && now < khutbahReminderEnd;
+  const inKhutbahBlackout = isFridayKhutbahGap && now >= khutbahReminderEnd;
+
+  blackout.classList.toggle("show", inPrayer || (inKhutbahBlackout && !inAdhanFlash));
   if(inPrayer) lastPrayerKey = inPrayerKey;
+
+  document.getElementById("khutbahReminder").classList.toggle("show", inKhutbahReminder && !inAdhanFlash);
 
   // عند انتقال الحالة من "قبل الإقامة" إلى "الإقامة" مباشرة: أطلق مرحلة الرمز فقط لمدة 10 ثوانٍ
   if(!wasInPrayer && inPrayer){
@@ -1206,10 +1233,10 @@ function updatePrayers(now){
   }
 
   /* العداد التنازلي بملء الشاشة بين الأذان والإقامة (يظهر بعد انتهاء وميض الأذان) */
-  const showIqamaFull = inIqamaGap && !inAdhanFlash && !inPrayer;
+  const showIqamaFull = inIqamaGap && !inAdhanFlash && !inPrayer && !isFridayKhutbahGap;
   iqamaFull.classList.toggle("show", showIqamaFull);
   if(showIqamaFull){
-    document.getElementById("iqamaFullPrayer").textContent = "صلاة " + prayerNamesAr[gapKey];
+    document.getElementById("iqamaFullPrayer").textContent = "صلاة " + prayerLabel(gapKey, gapIqamaDate);
     document.getElementById("iqamaFullCount").textContent = fmtMS(gapIqamaDate-now);
   }
 }
@@ -1351,6 +1378,7 @@ function showFullscreenSlide(){
   if(document.getElementById("blackout").classList.contains("show")) return; // لا تتداخل مع وقت الصلاة
   if(document.getElementById("adhanFlash").classList.contains("show")) return; // الأذان له الأولوية القصوى
   if(document.getElementById("iqamaFull").classList.contains("show")) return; // ولا مع عداد الإقامة بملء الشاشة
+  if(document.getElementById("khutbahReminder").classList.contains("show")) return; // ولا مع تذكير خطبة الجمعة
   if(document.getElementById("adhkarFull").classList.contains("show")) return; // ولا مع أذكار ما بعد الصلاة
   if(document.getElementById("clockErrorBanner").classList.contains("show")) return; // لا تعرض محتوى مناسبات بناءً على ساعة خاطئة
   const queue = buildRotationQueue();
@@ -1394,7 +1422,7 @@ setInterval(trySyncYearlyTimes, 3600000); // إعادة المحاولة كل س
 const DAILY_RELOAD_HOUR = 3; // الساعة 3 فجرًا بتوقيت الجهاز — يمكن تغييرها
 const DAILY_RELOAD_KEY = "mosqueLastAutoReloadDate";
 function isSafeToAutoReload(){
-  const blockerIds = ["blackout","adhanFlash","iqamaFull","adhkarFull","clockErrorBanner"];
+  const blockerIds = ["blackout","adhanFlash","iqamaFull","adhkarFull","clockErrorBanner","khutbahReminder"];
   for(const id of blockerIds){
     const el = document.getElementById(id);
     if(el && el.classList.contains("show")) return false; // نشاط حساس جارٍ الآن
@@ -1962,6 +1990,7 @@ function populateAdminFromState(){
   document.getElementById("gap-asr").value = state.iqamaGap.asr;
   document.getElementById("gap-maghrib").value = state.iqamaGap.maghrib;
   document.getElementById("gap-isha").value = state.iqamaGap.isha;
+  document.getElementById("gap-friday-dhuhr").value = state.iqamaGap.fridayDhuhr||20;
 
   document.getElementById("off-fajr").value = state.prayerOffsets.fajr;
   document.getElementById("off-sunrise").value = state.prayerOffsets.sunrise||0;
@@ -2005,6 +2034,7 @@ document.getElementById("saveBtn").addEventListener("click", ()=>{
     asr: Number(document.getElementById("gap-asr").value)||0,
     maghrib: Number(document.getElementById("gap-maghrib").value)||0,
     isha: Number(document.getElementById("gap-isha").value)||0,
+    fridayDhuhr: Number(document.getElementById("gap-friday-dhuhr").value)||20,
   };
   state.prayerOffsets = {
     fajr: Number(document.getElementById("off-fajr").value)||0,
