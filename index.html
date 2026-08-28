@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -44,7 +44,7 @@
   .corner.br{bottom:22px; left:22px; border-right:none; border-top:none; border-bottom-left-radius:40px;}
 
   #header{position:relative; z-index:2; width:100%; text-align:center; padding-top:clamp(4px,1vh,12px);}
-  #mosqueName{font-size:clamp(4.4rem,9.8vh,7rem); font-weight:bold; letter-spacing:2px;
+  #mosqueName{font-size:clamp(3rem,7vh,5rem); font-weight:bold; letter-spacing:2px;
     background:linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 45%, var(--gold) 100%);
     background-size:220% auto; -webkit-background-clip:text; background-clip:text; color:transparent;
     animation:shine 6s linear infinite;}
@@ -54,7 +54,7 @@
   #fridayBadge .fbText{font-size:clamp(1.9rem,4.4vh,3rem); font-weight:bold; letter-spacing:0.5px; color:var(--gold-light); line-height:1.5;}
   #fridayBadge .fbSource{font-size:clamp(1.1rem,2.2vh,1.5rem); color:var(--gold-light); opacity:0.8; margin-top:6px;}
   #clockWrap{margin-top:clamp(2px,0.6vh,8px); display:flex; align-items:baseline; justify-content:center; gap:14px;}
-  #clockTime{font-size:clamp(4rem,10.2vh,7.6rem); font-weight:bold; color:var(--cream); letter-spacing:2px;
+  #clockTime{font-size:clamp(3rem,7.5vh,5.5rem); font-weight:bold; color:var(--cream); letter-spacing:2px;
     text-shadow:0 0 24px rgba(201,162,39,0.35);}
   #clockMeridiem{display:none;}
 
@@ -89,9 +89,9 @@
     border:1px solid var(--gold-light); opacity:0.4; border-bottom:none;
     border-radius:clamp(58px,14vh,132px) clamp(58px,14vh,132px) 8px 8px;}
   #nextPrayerBanner::after{content:""; position:absolute; left:0; right:0; bottom:-3px; height:3px; background:var(--gold);}
-  #nextPrayerLabel{font-size:clamp(1.4rem,2.8vh,1.9rem); color:var(--gold-light); margin-bottom:3px;}
-  #nextPrayerName{font-size:clamp(2.8rem,6vh,4.2rem); font-weight:bold; color:var(--cream); margin-bottom:clamp(3px,0.8vh,8px);}
-  #countdown{font-size:clamp(2.8rem,7vh,4.8rem); font-weight:bold; letter-spacing:2px; color:var(--gold);
+  #nextPrayerLabel{font-size:clamp(1.1rem,2.2vh,1.5rem); color:var(--gold-light); margin-bottom:3px;}
+  #nextPrayerName{font-size:clamp(2.2rem,4.5vh,3.2rem); font-weight:bold; color:var(--cream); margin-bottom:clamp(3px,0.8vh,8px);}
+  #countdown{font-size:clamp(2.2rem,5.2vh,3.6rem); font-weight:bold; letter-spacing:2px; color:var(--gold);
     font-variant-numeric:tabular-nums; direction:ltr;}
   #countdownSub{font-size:clamp(0.8rem,1.5vh,1rem); color:var(--cream); opacity:0.65; margin-top:3px; margin-bottom:6px;}
 
@@ -482,6 +482,14 @@
           <div class="fieldRow"><label>الإحداثيات</label>
             <span id="coordDisplay" style="color:var(--cream); opacity:.8; font-size:.9rem;">--</span>
           </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+            <button class="btnGold" id="autoLocateBtn">📍 تحديد موقعي تلقائيًا</button>
+            <a id="mapsPreviewLink" href="#" target="_blank" rel="noopener"
+               style="display:none; align-self:center; color:var(--gold-light); font-size:.85rem; text-decoration:underline;">
+               🗺️ عرض الموقع على خرائط Google
+            </a>
+          </div>
+          <div id="autoLocateStatus" style="font-size:.85rem; color:var(--gold-light); margin-bottom:6px;"></div>
           <div class="nudgeGrid">
             <span></span><button class="nudgeBtn" data-dir="N">⬆</button><span></span>
             <button class="nudgeBtn" data-dir="W">⬅</button><span></span><button class="nudgeBtn" data-dir="E">➡</button>
@@ -627,7 +635,7 @@ if("serviceWorker" in navigator){
 }
 
 /* ============================================================
-   الثوابت: الولايات الجزائرية الـ58 بإحداثياتها
+   الثوابت: الولايات الجزائرية الـ69 بإحداثياتها (بعد التقسيم الإداري الجديد 2026)
    ============================================================ */
 const WILAYAS = [
  {n:"01 - أدرار", lat:27.87, lng:-0.29}, {n:"02 - الشلف", lat:36.16, lng:1.33},
@@ -658,7 +666,13 @@ const WILAYAS = [
  {n:"51 - أولاد جلال", lat:34.42, lng:5.06}, {n:"52 - بني عباس", lat:30.13, lng:-2.17},
  {n:"53 - عين صالح", lat:27.19, lng:2.48}, {n:"54 - عين قزام", lat:19.57, lng:5.77},
  {n:"55 - تقرت", lat:33.10, lng:6.06}, {n:"56 - جانت", lat:24.55, lng:9.48},
- {n:"57 - المغير", lat:33.95, lng:5.93}, {n:"58 - المنيعة", lat:30.58, lng:2.88}
+ {n:"57 - المغير", lat:33.95, lng:5.93}, {n:"58 - المنيعة", lat:30.58, lng:2.88},
+ {n:"59 - آفلو", lat:34.11, lng:2.10}, {n:"60 - بريكة", lat:35.38, lng:5.37},
+ {n:"61 - قصر الشلالة", lat:35.22, lng:2.31}, {n:"62 - مسعد", lat:34.15, lng:3.50},
+ {n:"63 - عين وسارة", lat:35.45, lng:2.91}, {n:"64 - بوسعادة", lat:35.21, lng:4.19},
+ {n:"65 - الأبيض سيدي الشيخ", lat:32.89, lng:0.53}, {n:"66 - القنطرة", lat:35.22, lng:5.69},
+ {n:"67 - بئر العاتر", lat:34.75, lng:8.06}, {n:"68 - قصر البخاري", lat:35.86, lng:2.76},
+ {n:"69 - العريشة", lat:34.29, lng:-1.28}
 ];
 
 const DEFAULT_IMAGES = [
@@ -1798,7 +1812,35 @@ wilayaSelect.addEventListener("change", ()=>{
 function updateCoordDisplay(){
   document.getElementById("coordDisplay").textContent =
     `${state.location.lat.toFixed(3)}, ${state.location.lng.toFixed(3)}`;
+  const link = document.getElementById("mapsPreviewLink");
+  link.href = `https://www.google.com/maps?q=${state.location.lat},${state.location.lng}`;
+  link.style.display = "inline";
 }
+
+/* ---- تحديد الموقع تلقائيًا عبر GPS/المتصفح، يعمل في أي دولة ---- */
+document.getElementById("autoLocateBtn").addEventListener("click", ()=>{
+  const statusEl = document.getElementById("autoLocateStatus");
+  if(!navigator.geolocation){
+    statusEl.textContent = "المتصفح لا يدعم تحديد الموقع الجغرافي.";
+    return;
+  }
+  statusEl.textContent = "جارٍ تحديد الموقع...";
+  navigator.geolocation.getCurrentPosition(
+    (pos)=>{
+      state.location.lat = pos.coords.latitude;
+      state.location.lng = pos.coords.longitude;
+      state.location.wilayaIndex = null; // لم يعد مرتبطًا بقائمة الولايات الجزائرية
+      updateCoordDisplay();
+      saveState();
+      const acc = Math.round(pos.coords.accuracy || 0);
+      statusEl.textContent = `تم تحديد الموقع بدقة ~${acc} متر. راجعه على الخريطة أدناه ويمكنك تعديله يدويًا إذا لزم.`;
+    },
+    (err)=>{
+      statusEl.textContent = "تعذر تحديد الموقع (تأكد من إذن الموقع في المتصفح). يمكنك استعمال قائمة الولاية أو الأسهم يدويًا.";
+    },
+    { enableHighAccuracy:true, timeout:10000 }
+  );
+});
 document.querySelectorAll(".nudgeBtn").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     const step = 0.09; // ~10km
