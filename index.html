@@ -70,20 +70,6 @@
     text-shadow:0 0 24px rgba(201,162,39,0.35);}
   #clockMeridiem{display:none;}
 
-  /* الساعة العقربية — تظهر بشكل دوري بدل الساعة الرقمية */
-  #analogClockWrap{display:none; margin-top:clamp(6px,1.6vh,18px); justify-content:center;
-    animation:analogFadeIn .6s ease;}
-  #analogClockWrap.show{display:flex;}
-  @keyframes analogFadeIn{from{opacity:0; transform:scale(.85);} to{opacity:1; transform:scale(1);}}
-  #analogClock{width:clamp(140px,20vh,240px); height:clamp(140px,20vh,240px);}
-  #analogClock .face{fill:rgba(255,255,255,0.03); stroke:var(--gold); stroke-width:3;}
-  #analogClock .tick{stroke:var(--gold-light); stroke-width:2; opacity:0.8;}
-  #analogClock .tickMajor{stroke:var(--gold); stroke-width:4; opacity:1;}
-  #analogClock .hand{stroke-linecap:round;}
-  #analogClock .hourHand{stroke:var(--cream); stroke-width:7;}
-  #analogClock .minHand{stroke:var(--cream); stroke-width:5;}
-  #analogClock .secHand{stroke:var(--gold); stroke-width:2.5;}
-  #analogClock .centerDot{fill:var(--gold);}
   #dateRow{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-top:3px; max-width:94vw;}
   #hijriDate, #gregDate{font-size:clamp(1.3rem,2.6vh,1.9rem); color:var(--cream); opacity:0.85;}
   #gregDate .dnum{direction:ltr; unicode-bidi:isolate; display:inline-block;}
@@ -150,6 +136,14 @@
   #blackout .bTitle{font-size:2.4rem; margin-bottom:14px;}
   #blackout .bSub{font-size:clamp(1.6rem,3.4vh,2.3rem); color:var(--cream); opacity:0.9; max-width:90%; line-height:1.6;}
 
+  #zoomControls{position:fixed; left:10px; bottom:10px; z-index:90; display:flex; gap:6px;
+    opacity:0.28; transition:opacity .25s ease;}
+  #zoomControls:hover{opacity:0.95;}
+  #zoomControls button{width:34px; height:34px; border-radius:8px; border:1px solid var(--gold);
+    background:rgba(20,12,4,0.75); color:var(--cream); font-size:1.1rem; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-family:inherit;}
+  #zoomControls button:active{transform:scale(0.92);}
+  #zoomResetBtn{font-size:0.95rem;}
   #clockErrorBanner{position:fixed; top:0; right:0; bottom:0; left:0; background:#1a0e04; display:none; z-index:85;
     flex-direction:column; align-items:center; justify-content:center; color:var(--gold); text-align:center; padding:6vw;}
   #clockErrorBanner.show{display:flex;}
@@ -386,6 +380,12 @@
   <div id="arabesque"></div>
   <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
 
+  <div id="zoomControls">
+    <button id="zoomOutBtn" type="button" aria-label="تصغير">−</button>
+    <button id="zoomResetBtn" type="button" aria-label="الحجم الافتراضي">⟳</button>
+    <button id="zoomInBtn" type="button" aria-label="تكبير">+</button>
+  </div>
+
   <div id="stageContent">
   <div id="header">
     <div id="mihrabFrame">
@@ -419,16 +419,6 @@
     <div id="fridayBadge"><div class="fbText">خَيْرُ يَوْمٍ طَلَعَتْ فِيهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div><div class="fbSource">رواه مسلم</div></div>
     <div id="dateRow"><span id="dayName">--</span><span class="dateSep">•</span><span id="hijriDate">--</span><span class="dateSep">•</span><span id="gregDate">--</span></div>
     <div id="clockWrap"><span id="clockTime">--:--</span><span id="clockMeridiem">--</span></div>
-    <div id="analogClockWrap">
-      <svg id="analogClock" viewBox="0 0 200 200">
-        <circle class="face" cx="100" cy="100" r="92"/>
-        <g id="ticks"></g>
-        <line id="hourHand" class="hand hourHand" x1="100" y1="100" x2="100" y2="55"/>
-        <line id="minHand" class="hand minHand" x1="100" y1="100" x2="100" y2="35"/>
-        <line id="secHand" class="hand secHand" x1="100" y1="100" x2="100" y2="30"/>
-        <circle class="centerDot" cx="100" cy="100" r="6"/>
-      </svg>
-    </div>
   </div>
 
   <div id="nextPrayerBanner">
@@ -1182,14 +1172,6 @@ function updateClock(now){
   const s = String(now.getSeconds()).padStart(2,"0");
   document.getElementById("clockTime").textContent = `${String(h).padStart(2,"0")}:${m}:${s}`;
 
-  // تحديث عقارب الساعة العقربية (تُحسب دائمًا، تظهر فقط عند تفعيلها دوريًا)
-  const secDeg = now.getSeconds()*6;
-  const minDeg = now.getMinutes()*6 + now.getSeconds()*0.1;
-  const hourDeg = (h%12)*30 + now.getMinutes()*0.5;
-  document.getElementById("secHand").setAttribute("transform", `rotate(${secDeg} 100 100)`);
-  document.getElementById("minHand").setAttribute("transform", `rotate(${minDeg} 100 100)`);
-  document.getElementById("hourHand").setAttribute("transform", `rotate(${hourDeg} 100 100)`);
-
   const days=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
   const dd = now.getDate(), mm = now.getMonth()+1, yyyy = now.getFullYear();
   const dateStr = `${yyyy}/${String(mm).padStart(2,"0")}/${String(dd).padStart(2,"0")}`;
@@ -1436,6 +1418,19 @@ function syncTickerHeight(){
    "المدينة")، لأن صف المواقيت أصبح دائمًا سطرًا واحدًا (بلا التفاف)
    ويُصغَّر بدل أن يلتف لسطر ثانٍ أو يفيض خارج الشاشة.
    ============================================================ */
+/* تكبير/تصغير يدوي: عامل إضافي يضربه المستخدم فوق التحجيم التلقائي،
+   يُحفظ محليًا على الجهاز فيبقى كما تركه المستخدم بعد إعادة التحميل */
+let manualZoomFactor = 1;
+(function loadManualZoom(){
+  const saved = parseFloat(localStorage.getItem("manualZoomFactor"));
+  if(!isNaN(saved) && saved > 0) manualZoomFactor = saved;
+})();
+function setManualZoom(factor){
+  manualZoomFactor = Math.min(1.6, Math.max(0.5, factor));
+  localStorage.setItem("manualZoomFactor", String(manualZoomFactor));
+  fitStageContent();
+}
+
 function fitStageContent(){
   const content = document.getElementById("stageContent");
   const stage = document.getElementById("stage");
@@ -1454,9 +1449,14 @@ function fitStageContent(){
     scale = Math.min(scale, availableW / neededW);
   }
   scale = Math.max(0.55, scale); // لا يصغر أكثر من اللازم لبقاء القراءة ممكنة
-  content.style.transform = scale < 1 ? `scale(${scale})` : "scale(1)";
+  scale = scale * manualZoomFactor; // تطبيق تفضيل المستخدم اليدوي فوق التحجيم التلقائي
+  content.style.transform = scale !== 1 ? `scale(${scale})` : "scale(1)";
 }
 window.addEventListener("resize", ()=> fitStageContent());
+
+document.getElementById("zoomInBtn").addEventListener("click", ()=> setManualZoom(manualZoomFactor + 0.1));
+document.getElementById("zoomOutBtn").addEventListener("click", ()=> setManualZoom(manualZoomFactor - 0.1));
+document.getElementById("zoomResetBtn").addEventListener("click", ()=> setManualZoom(1));
 function measureAndApplyTickerSpeed(groupA, track, attemptsLeft){
   const singleWidth = groupA.offsetWidth;
   // إذا كان القياس صغيرًا بشكل غير منطقي (النص لم يُرسم بعد)، أعد المحاولة بدل اعتماد سرعة خاطئة
@@ -1779,39 +1779,6 @@ function tick(){
   // إعادة ضبط المساحة المحجوزة للشريط دوريًا (كل 5 ثوانٍ) كضمان إضافي لعدم تراكبه مع صندوق الصلاة القادمة
   if(now.getSeconds() % 5 === 0){ syncTickerHeight(); fitStageContent(); }
 }
-/* ============================================================
-   الساعة العقربية — تظهر بشكل دوري بدل الساعة الرقمية لبضع ثوانٍ
-   ============================================================ */
-function buildAnalogTicks(){
-  const g = document.getElementById("ticks");
-  for(let i=0; i<60; i++){
-    const angle = i*6;
-    const isMajor = i%5===0;
-    const r1 = isMajor ? 78 : 84;
-    const r2 = 90;
-    const rad = (angle-90) * Math.PI/180;
-    const x1 = 100 + r1*Math.cos(rad), y1 = 100 + r1*Math.sin(rad);
-    const x2 = 100 + r2*Math.cos(rad), y2 = 100 + r2*Math.sin(rad);
-    const line = document.createElementNS("http://www.w3.org/2000/svg","line");
-    line.setAttribute("x1", x1); line.setAttribute("y1", y1);
-    line.setAttribute("x2", x2); line.setAttribute("y2", y2);
-    line.setAttribute("class", isMajor ? "tickMajor" : "tick");
-    g.appendChild(line);
-  }
-}
-buildAnalogTicks();
-
-function toggleAnalogClock(show){
-  document.getElementById("clockWrap").style.display = show ? "none" : "flex";
-  document.getElementById("analogClockWrap").classList.toggle("show", show);
-}
-function showAnalogClockBriefly(){
-  if(document.getElementById("clockErrorBanner").classList.contains("show")) return;
-  toggleAnalogClock(true);
-  setTimeout(()=> toggleAnalogClock(false), 20000); // تبقى ظاهرة 20 ثانية ثم تعود الرقمية
-}
-setInterval(showAnalogClockBriefly, 240000); // كل 4 دقائق تظهر الساعة العقربية من حين لآخر
-
 tick();
 setInterval(tick, 1000);
 rebuildTicker();
