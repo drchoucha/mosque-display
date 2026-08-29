@@ -36,6 +36,10 @@
   #arabesque{position:absolute; top:0; right:0; bottom:0; left:0; opacity:0.16; pointer-events:none;
     background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='%23c9a227' stroke-width='1.1'%3E%3Ccircle cx='110' cy='110' r='58'/%3E%3Ccircle cx='0' cy='0' r='58'/%3E%3Ccircle cx='220' cy='0' r='58'/%3E%3Ccircle cx='0' cy='220' r='58'/%3E%3Ccircle cx='220' cy='220' r='58'/%3E%3Cpath d='M110 30 L140 80 L190 90 L155 125 L165 175 L110 150 L55 175 L65 125 L30 90 L80 80 Z'/%3E%3C/g%3E%3C/svg%3E");
     background-size:260px 260px;}
+  #fixedBgOverlay{position:absolute; top:0; right:0; bottom:0; left:0; z-index:1; pointer-events:none;
+    background:linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.62) 45%, rgba(0,0,0,0.72) 100%);
+    opacity:0; transition:opacity .4s ease;}
+  #fixedBgOverlay.show{opacity:1;}
 
   .corner{position:absolute; width:130px; height:130px; border:2px solid var(--gold); opacity:0.55; pointer-events:none;}
   .corner.tl{top:22px; right:22px; border-left:none; border-bottom:none; border-top-right-radius:40px;}
@@ -269,8 +273,8 @@
     cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:0.35; transition:opacity .3s;}
   #gearBtn:hover{opacity:1;}
 
-  #devCredit{position:absolute; bottom:78px; right:20px; z-index:25; font-size:0.42rem;
-    color:var(--gold-light); opacity:0.32; letter-spacing:0.4px; pointer-events:none;}
+  #devCredit{position:absolute; bottom:78px; right:20px; z-index:25; font-size:0.62rem;
+    color:var(--gold-light); opacity:0.45; letter-spacing:0.4px; pointer-events:none;}
 
   /* admin panel */
   #adminOverlay{position:fixed; top:0; right:0; bottom:0; left:0; z-index:100; background:rgba(0,0,0,0.6);
@@ -379,6 +383,7 @@
 
 <div id="stage">
   <div id="arabesque"></div>
+  <div id="fixedBgOverlay"></div>
   <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
 
   <div id="zoomControls">
@@ -1388,6 +1393,7 @@ let lastFixedBg = undefined; // للتتبّع فقط، تفاديًا لإعا�
 function applyFixedBackgroundIfAny(){
   // إن كانت هناك خلفية ثابتة مختارة من المعرض، نطبّقها ونمنع التبديل التلقائي حسب الفترة
   const stage = document.getElementById("stage");
+  const overlay = document.getElementById("fixedBgOverlay");
   if(state.fixedBackground){
     const im = state.images.find(x=>String(x.id)===String(state.fixedBackground));
     if(im){
@@ -1395,6 +1401,7 @@ function applyFixedBackgroundIfAny(){
         stage.style.backgroundImage = `url(${im.data})`;
         stage.style.backgroundSize = "cover";
         stage.style.backgroundPosition = "center";
+        overlay.classList.add("show"); // طبقة تعتيم لضمان وضوح النصوص فوق الصورة
         lastFixedBg = im.id;
         lastPeriod = null; // إجبار إعادة التطبيق إن أُلغيت الخلفية الثابتة لاحقًا
       }
@@ -1406,6 +1413,7 @@ function applyFixedBackgroundIfAny(){
   }
   if(lastFixedBg !== null){
     stage.style.backgroundImage = "";
+    overlay.classList.remove("show");
     lastFixedBg = null;
   }
   return false;
