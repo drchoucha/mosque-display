@@ -144,6 +144,7 @@
     display:flex; align-items:center; justify-content:center; font-family:inherit;}
   #zoomControls button:active{transform:scale(0.92);}
   #zoomResetBtn{font-size:0.95rem;}
+  .ctrlDivider{width:1px; align-self:stretch; background:var(--gold); opacity:0.4; margin:2px 0;}
   #clockErrorBanner{position:fixed; top:0; right:0; bottom:0; left:0; background:#1a0e04; display:none; z-index:85;
     flex-direction:column; align-items:center; justify-content:center; color:var(--gold); text-align:center; padding:6vw;}
   #clockErrorBanner.show{display:flex;}
@@ -384,6 +385,9 @@
     <button id="zoomOutBtn" type="button" aria-label="تصغير">−</button>
     <button id="zoomResetBtn" type="button" aria-label="الحجم الافتراضي">⟳</button>
     <button id="zoomInBtn" type="button" aria-label="تكبير">+</button>
+    <span class="ctrlDivider"></span>
+    <button id="panUpBtn" type="button" aria-label="تحريك للأعلى">↑</button>
+    <button id="panDownBtn" type="button" aria-label="تحريك للأسفل">↓</button>
   </div>
 
   <div id="stageContent">
@@ -1418,16 +1422,25 @@ function syncTickerHeight(){
    "المدينة")، لأن صف المواقيت أصبح دائمًا سطرًا واحدًا (بلا التفاف)
    ويُصغَّر بدل أن يلتف لسطر ثانٍ أو يفيض خارج الشاشة.
    ============================================================ */
-/* تكبير/تصغير يدوي: عامل إضافي يضربه المستخدم فوق التحجيم التلقائي،
-   يُحفظ محليًا على الجهاز فيبقى كما تركه المستخدم بعد إعادة التحميل */
+/* تكبير/تصغير + تحريك عمودي يدوي: عاملان إضافيان يضيفهما المستخدم فوق
+   التحجيم التلقائي، يُحفظان محليًا على الجهاز فيبقيان كما تركهما المستخدم
+   بعد إعادة التحميل */
 let manualZoomFactor = 1;
-(function loadManualZoom(){
-  const saved = parseFloat(localStorage.getItem("manualZoomFactor"));
-  if(!isNaN(saved) && saved > 0) manualZoomFactor = saved;
+let manualPanY = 0;
+(function loadManualAdjustments(){
+  const savedZoom = parseFloat(localStorage.getItem("manualZoomFactor"));
+  if(!isNaN(savedZoom) && savedZoom > 0) manualZoomFactor = savedZoom;
+  const savedPan = parseFloat(localStorage.getItem("manualPanY"));
+  if(!isNaN(savedPan)) manualPanY = savedPan;
 })();
 function setManualZoom(factor){
   manualZoomFactor = Math.min(1.6, Math.max(0.5, factor));
   localStorage.setItem("manualZoomFactor", String(manualZoomFactor));
+  fitStageContent();
+}
+function setManualPan(y){
+  manualPanY = Math.min(400, Math.max(-400, y));
+  localStorage.setItem("manualPanY", String(manualPanY));
   fitStageContent();
 }
 
@@ -1450,13 +1463,17 @@ function fitStageContent(){
   }
   scale = Math.max(0.55, scale); // لا يصغر أكثر من اللازم لبقاء القراءة ممكنة
   scale = scale * manualZoomFactor; // تطبيق تفضيل المستخدم اليدوي فوق التحجيم التلقائي
-  content.style.transform = scale !== 1 ? `scale(${scale})` : "scale(1)";
+  // ترتيب translateY قبل scale يجعل مقدار التحريك بالبكسل ثابتًا على الشاشة
+  // بصرف النظر عن درجة التكبير/التصغير الحالية
+  content.style.transform = `translateY(${manualPanY}px) scale(${scale})`;
 }
 window.addEventListener("resize", ()=> fitStageContent());
 
 document.getElementById("zoomInBtn").addEventListener("click", ()=> setManualZoom(manualZoomFactor + 0.1));
 document.getElementById("zoomOutBtn").addEventListener("click", ()=> setManualZoom(manualZoomFactor - 0.1));
-document.getElementById("zoomResetBtn").addEventListener("click", ()=> setManualZoom(1));
+document.getElementById("zoomResetBtn").addEventListener("click", ()=> { setManualZoom(1); setManualPan(0); });
+document.getElementById("panUpBtn").addEventListener("click", ()=> setManualPan(manualPanY - 20));
+document.getElementById("panDownBtn").addEventListener("click", ()=> setManualPan(manualPanY + 20));
 function measureAndApplyTickerSpeed(groupA, track, attemptsLeft){
   const singleWidth = groupA.offsetWidth;
   // إذا كان القياس صغيرًا بشكل غير منطقي (النص لم يُرسم بعد)، أعد المحاولة بدل اعتماد سرعة خاطئة
