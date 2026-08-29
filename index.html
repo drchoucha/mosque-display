@@ -136,7 +136,7 @@
   #blackout .bTitle{font-size:2.4rem; margin-bottom:14px;}
   #blackout .bSub{font-size:clamp(1.6rem,3.4vh,2.3rem); color:var(--cream); opacity:0.9; max-width:90%; line-height:1.6;}
 
-  #zoomControls{position:fixed; left:10px; bottom:10px; z-index:90; display:flex; gap:6px;
+  #zoomControls{position:fixed; right:10px; bottom:10px; z-index:90; display:flex; gap:6px;
     opacity:0.28; transition:opacity .25s ease;}
   #zoomControls:hover{opacity:0.95;}
   #zoomControls button{width:34px; height:34px; border-radius:8px; border:1px solid var(--gold);
@@ -598,6 +598,16 @@
         <input type="file" id="imgFileInput" accept="image/*" multiple style="display:none;">
         <button class="btnGold" id="pickImgBtn">📷 اختر صورة من الجهاز</button>
         <div style="margin-top:8px; font-size:.85rem; color:var(--cream); opacity:.7;">يتم ضغط الصور تلقائيًا عند الإضافة.</div>
+
+        <div class="sectionTitle" style="margin-top:18px;">خلفية الشاشة الرئيسية</div>
+        <div style="font-size:.85rem; color:var(--cream); opacity:.75; margin-bottom:8px;">
+          اختر صورة من الأسفل لتصبح خلفية ثابتة للشاشة الرئيسية بدل الخلفية المعهودة المتغيّرة حسب وقت الصلاة.
+        </div>
+        <div id="bgStatusRow" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+          <span id="bgStatusText" style="font-size:.9rem;"></span>
+          <button class="btnGhost" id="resetBgBtn" style="display:none;">↺ الرجوع للخلفية المعهودة</button>
+        </div>
+
         <div id="imgGrid"></div>
       </div>
 
@@ -885,6 +895,7 @@ function defaultState(){
     announcements: [],
     images: JSON.parse(JSON.stringify(DEFAULT_IMAGES)),
     imagesVersion: IMAGES_VERSION,
+    fixedBackground: null, // معرّف صورة من state.images لاعتمادها خلفية ثابتة للشاشة بدل التدرّج اللوني المتغيّر حسب وقت الصلاة؛ null = الخلفية المعهودة (periodThemes)
     yearlyTimes: null, // { year: 2026, days: { "1-1":{fajr:...}, ... } }
     hijriOffset: 0, // تصحيح يدوي بالأيام للتقويم الهجري (يُضبط مرة، أو يُحدَّث تلقائيًا عند توفر الإنترنت)
     hijriAutoSync: true, // محاولة المزامنة التلقائية مع خدمة تقويم رسمية كلما توفر إنترنت
@@ -1373,7 +1384,34 @@ function getCurrentPeriodKey(now, times){
   return current === null ? "isha" : current; // قبل الفجر = لا نزال في فترة العشاء/الليل
 }
 let lastPeriod = null;
+let lastFixedBg = undefined; // للتتبّع فقط، تفاديًا لإعادة تطبيق نفس الخلفية الثابتة كل ثانية
+function applyFixedBackgroundIfAny(){
+  // إن كانت هناك خلفية ثابتة مختارة من المعرض، نطبّقها ونمنع التبديل التلقائي حسب الفترة
+  const stage = document.getElementById("stage");
+  if(state.fixedBackground){
+    const im = state.images.find(x=>String(x.id)===String(state.fixedBackground));
+    if(im){
+      if(lastFixedBg !== im.id){
+        stage.style.backgroundImage = `url(${im.data})`;
+        stage.style.backgroundSize = "cover";
+        stage.style.backgroundPosition = "center";
+        lastFixedBg = im.id;
+        lastPeriod = null; // إجبار إعادة التطبيق إن أُلغيت الخلفية الثابتة لاحقًا
+      }
+      return true;
+    }
+    // الصورة المختارة سابقًا لم تعد موجودة (حُذفت) — نتراجع تلقائيًا للخلفية المعهودة
+    state.fixedBackground = null;
+    saveState();
+  }
+  if(lastFixedBg !== null){
+    stage.style.backgroundImage = "";
+    lastFixedBg = null;
+  }
+  return false;
+}
 function updatePeriodTheme(now){
+  if(applyFixedBackgroundIfAny()) return;
   const times = getEffectivePrayerTimes(now);
   const period = getCurrentPeriodKey(now, times);
   if(period !== lastPeriod){
@@ -2058,6 +2096,7 @@ function compressAndStoreImage(source, w, h){
   state.images.push({ id:Date.now()+Math.random(), data: compressed });
   saveState();
   renderImgGrid();
+  renderBgStatus();
 }
 document.getElementById("imgFileInput").addEventListener("change", (e)=>{
   const files = Array.from(e.target.files);
@@ -2088,17 +2127,45 @@ document.getElementById("imgFileInput").addEventListener("change", (e)=>{
   });
   e.target.value = "";
 });
+function renderBgStatus(){
+  const txt = document.getElementById("bgStatusText");
+  const resetBtn = document.getElementById("resetBgBtn");
+  if(state.fixedBackground && state.images.some(x=>String(x.id)===String(state.fixedBackground))){
+    txt.textContent = "✅ الخلفية الحالية: صورة ثابتة مختارة";
+    resetBtn.style.display = "inline-block";
+  } else {
+    txt.textContent = "الخلفية الحالية: المعهودة (متغيّرة حسب وقت الصلاة)";
+    resetBtn.style.display = "none";
+  }
+}
+document.getElementById("resetBgBtn").addEventListener("click", ()=>{
+  state.fixedBackground = null;
+  saveState();
+  renderImgGrid();
+  renderBgStatus();
+});
 function renderImgGrid(){
   const grid = document.getElementById("imgGrid");
   grid.innerHTML = "";
   state.images.forEach(im=>{
+    const isCurrentBg = String(state.fixedBackground)===String(im.id);
     const box = document.createElement("div");
     box.className = "imgThumb";
-    box.innerHTML = `<img src="${im.data}"><button class="delImg">✕</button>`;
+    box.style.position = "relative";
+    box.innerHTML = `<img src="${im.data}"><button class="delImg">✕</button>
+      <button class="setBgBtn" style="position:absolute; bottom:4px; right:4px; left:4px; font-size:.7rem; padding:3px 4px; border-radius:6px; border:1px solid var(--gold); cursor:pointer; ${isCurrentBg ? 'background:var(--gold); color:#1a1400; font-weight:bold;' : 'background:rgba(0,0,0,0.55); color:var(--gold-light);'}">${isCurrentBg ? '✓ الخلفية الحالية' : 'اجعلها الخلفية'}</button>`;
     box.querySelector(".delImg").addEventListener("click", ()=>{
       state.images = state.images.filter(x=>x.id!==im.id);
+      if(isCurrentBg) state.fixedBackground = null;
       saveState();
       renderImgGrid();
+      renderBgStatus();
+    });
+    box.querySelector(".setBgBtn").addEventListener("click", ()=>{
+      state.fixedBackground = isCurrentBg ? null : im.id;
+      saveState();
+      renderImgGrid();
+      renderBgStatus();
     });
     grid.appendChild(box);
   });
@@ -2160,6 +2227,7 @@ function populateAdminFromState(){
   renderTemplates();
   renderAnnList();
   renderImgGrid();
+  renderBgStatus();
 }
 
 /* ---- حفظ ---- */
