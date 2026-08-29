@@ -37,25 +37,42 @@
     background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='%23c9a227' stroke-width='1.1'%3E%3Ccircle cx='110' cy='110' r='58'/%3E%3Ccircle cx='0' cy='0' r='58'/%3E%3Ccircle cx='220' cy='0' r='58'/%3E%3Ccircle cx='0' cy='220' r='58'/%3E%3Ccircle cx='220' cy='220' r='58'/%3E%3Cpath d='M110 30 L140 80 L190 90 L155 125 L165 175 L110 150 L55 175 L65 125 L30 90 L80 80 Z'/%3E%3C/g%3E%3C/svg%3E");
     background-size:260px 260px;}
 
-  /* عند اعتماد صورة كخلفية ثابتة: بطاقات واضحة الحدود بخلفية داكنة مخضرّة شبه شفافة
-     خلف كل عنصر نصّي (اسم المسجد + التاريخ + الساعة + المحراب داخل #header، وبطاقات المواقيت،
-     وبطاقة الصلاة القادمة) لضمان وضوح القراءة أيًا كانت ألوان الصورة، دون تعتيم كامل الشاشة */
+  /* عند اعتماد صورة كخلفية ثابتة: تُترك الصورة كما هي بدون أي إطارات أو ألواح داكنة فوقها،
+     ويُعتمد بدل ذلك لون نص أبيض بخط توهّج/تحديد أسود يضمن وضوح القراءة على أي خلفية */
   #stage.hasFixedBg #header{
-    background:rgba(6,36,26,0.62); border:2px solid #2e8b57; border-radius:28px;
-    padding:10px clamp(16px,4vw,40px) 22px; box-shadow:0 10px 34px rgba(0,0,0,0.4);
+    background:none; border:none; border-radius:0;
+    padding:10px clamp(16px,4vw,40px) 22px; box-shadow:none;
   }
   #stage.hasFixedBg .prayerCard{
-    background:rgba(6,36,26,0.62) !important; border-color:#2e8b57 !important;
+    background:none !important; border:none !important; box-shadow:none !important;
   }
   #stage.hasFixedBg .prayerCard.active, #stage.hasFixedBg #imsakCard.ramadanActive{
-    background:linear-gradient(180deg, rgba(46,139,87,0.5), rgba(46,139,87,0.18)) !important;
-    border-color:#4fc989 !important;
+    background:none !important; border:none !important; box-shadow:none !important;
   }
   #stage.hasFixedBg #nextPrayerBanner{
-    background:rgba(6,36,26,0.62); border-color:#2e8b57;
+    background:none; border:none; box-shadow:none;
   }
-  #stage.hasFixedBg #nextPrayerBanner::before{ border-color:#4fc989; }
-  #stage.hasFixedBg #nextPrayerBanner::after{ background:#2e8b57; }
+  #stage.hasFixedBg #nextPrayerBanner::before{ display:none; }
+  #stage.hasFixedBg #nextPrayerBanner::after{ display:none; }
+
+  /* لون نص موحّد يناسب كل الخلفيات: أبيض مع توهّج/تحديد أسود قوي حول كل حرف ورقم */
+  #stage.hasFixedBg #mosqueName{
+    background:none; -webkit-background-clip:initial; background-clip:initial;
+    -webkit-text-fill-color:#ffffff; color:#ffffff; animation:none;
+    text-shadow:-2px -2px 4px rgba(0,0,0,0.9), 2px -2px 4px rgba(0,0,0,0.9),
+      -2px 2px 4px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.9), 0 0 16px rgba(0,0,0,0.7);
+  }
+  #stage.hasFixedBg #clockTime, #stage.hasFixedBg #hijriDate, #stage.hasFixedBg #gregDate,
+  #stage.hasFixedBg #dayName, #stage.hasFixedBg .dateSep, #stage.hasFixedBg #fridayBadge .fbText,
+  #stage.hasFixedBg #fridayBadge .fbSource, #stage.hasFixedBg #nextPrayerLabel,
+  #stage.hasFixedBg #nextPrayerName, #stage.hasFixedBg #countdown, #stage.hasFixedBg #countdownSub,
+  #stage.hasFixedBg .prayerCard .pName, #stage.hasFixedBg .prayerCard .pTime,
+  #stage.hasFixedBg .prayerCard .pGap, #stage.hasFixedBg .prayerCard.active .pName,
+  #stage.hasFixedBg #imsakCard.ramadanActive .pName{
+    color:#ffffff !important;
+    text-shadow:-2px -2px 4px rgba(0,0,0,0.9), 2px -2px 4px rgba(0,0,0,0.9),
+      -2px 2px 4px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.9), 0 0 14px rgba(0,0,0,0.7) !important;
+  }
 
   .corner{position:absolute; width:130px; height:130px; border:2px solid var(--gold); opacity:0.55; pointer-events:none;}
   .corner.tl{top:22px; right:22px; border-left:none; border-bottom:none; border-top-right-radius:40px;}
