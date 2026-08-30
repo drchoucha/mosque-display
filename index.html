@@ -16,11 +16,13 @@
     --bg-deep:#0a2e2b; --bg-mid:#123d38; --bg-deep-night:#061a18;
     --gold:#c9a227; --gold-light:#e8c766; --cream:#f3ecd9;
     --teal-accent:#1b5e56; --danger:#7a2e2e; --panel:#0e2422;
-    --userZoom:1; --userPanY:0px;
+    --slidesZoom:1; --slidesPanY:0px; --adminZoom:1; --adminPanY:0px;
   }
-  /* تطبيق نفس تكبير/تصغير/تحريك الشاشة الرئيسية على كل صفحات دورة العرض
-     (الصورة، النص، الأذان، الإقامة، الخطبة، الدعاء، الأذكار، تنبيه الساعة) */
-  .pageZoom.show{ transform:translateY(var(--userPanY)) scale(var(--userZoom)); transform-origin:center center; }
+  /* تكبير/تصغير/تحريك صفحات العرض الأخرى (الصورة، النص، الأذان، الإقامة، الخطبة، الدعاء، الأذكار، تنبيه الساعة)
+     مستقل تمامًا عن الصفحة الرئيسية وعن لوحة الإعدادات */
+  .slideZoom.show{ transform:translateY(var(--slidesPanY)) scale(var(--slidesZoom)); transform-origin:center center; }
+  /* تكبير/تصغير/تحريك محتوى لوحة الإعدادات (دون شريط العنوان وزر الإغلاق) مستقل عن باقي الصفحات */
+  #adminContent.show{ transform:translateY(var(--adminPanY)) scale(var(--adminZoom)); transform-origin:center center; }
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{width:100%; height:100%; overflow:hidden; background:var(--bg-deep);
     font-family:"Traditional Arabic","Arabic Typesetting","Simplified Arabic","Segoe UI",Tahoma,sans-serif;
@@ -497,44 +499,44 @@
   </div>
 </div>
 
-<div id="photoSlide" class="pageZoom"><div id="photoCaption"></div></div>
-<div id="textSlide" class="pageZoom"><div class="arabesqueBig"></div><div id="textSlideFrame"><div id="textSlideCat"></div><div id="textSlideTxt"></div><div id="textSlideSource"></div></div></div>
+<div id="photoSlide" class="slideZoom"><div id="photoCaption"></div></div>
+<div id="textSlide" class="slideZoom"><div class="arabesqueBig"></div><div id="textSlideFrame"><div id="textSlideCat"></div><div id="textSlideTxt"></div><div id="textSlideSource"></div></div></div>
 
 <div id="nextPrayerBar"><div id="nextPrayerBarFill"></div></div>
 
 <div id="blackout"></div>
 
-<div id="adhanFlash" class="pageZoom">
+<div id="adhanFlash" class="slideZoom">
   <div class="flashWord">الأذان</div>
   <div class="flashPrayer" id="adhanFlashPrayer">--</div>
 </div>
 
-<div id="iqamaFull" class="pageZoom">
+<div id="iqamaFull" class="slideZoom">
   <div class="ifPrayer" id="iqamaFullPrayer">--</div>
   <div class="ifLabel">الإقامة بعد:</div>
   <div class="ifCount" id="iqamaFullCount">--:--</div>
 </div>
 
-<div id="khutbahReminder" class="pageZoom">
+<div id="khutbahReminder" class="slideZoom">
   <div class="krLabel">والإمام يخطب يوم الجمعة</div>
   <div class="krText">عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللَّهُ عَنْهُ، عَنِ النَّبِيِّ ﷺ قَالَ: «مَنْ تَوَضَّأَ فَأَحْسَنَ الْوُضُوءَ، ثُمَّ أَتَى الْجُمُعَةَ، فَاسْتَمَعَ وَأَنْصَتَ، غُفِرَ لَهُ مَا بَيْنَهُ وَبَيْنَ الْجُمُعَةِ وَزِيَادَةُ ثَلَاثَةِ أَيَّامٍ، وَمَنْ مَسَّ الْحَصَى فَقَدْ لَغَا»</div>
   <div class="krSource">رواه مسلم</div>
 </div>
 
-<div id="duaReminder" class="pageZoom">
+<div id="duaReminder" class="slideZoom">
   <div class="drLabel">بين الأذان والإقامة</div>
   <div class="drText">عَنْ أَنَسِ بْنِ مَالِكٍ رَضِيَ اللَّهُ عَنْهُ، قَالَ رَسُولُ اللَّهِ ﷺ: «الدُّعَاءُ لَا يُرَدُّ بَيْنَ الْأَذَانِ وَالْإِقَامَةِ، فَادْعُوا»</div>
   <div class="drSource">رواه أبو داود والترمذي والنسائي، وحسّنه الترمذي وصححه الألباني</div>
 </div>
 
-<div id="adhkarFull" class="pageZoom">
+<div id="adhkarFull" class="slideZoom">
   <div class="afLabel">أذكار ما بعد الصلاة</div>
   <div class="afTitle" id="adhkarTitle">--</div>
   <div class="afText" id="adhkarText">--</div>
   <div class="afNote" id="adhkarNote"></div>
 </div>
 
-<div id="clockErrorBanner" class="pageZoom">
+<div id="clockErrorBanner" class="slideZoom">
   <div class="bTitle">⚠️ ساعة الجهاز غير صحيحة</div>
   <div class="bSub">يرجى توصيل الجهاز بالإنترنت لدقيقة واحدة لتصحيح التاريخ والوقت تلقائيًا</div>
 </div>
@@ -547,7 +549,7 @@
       <h2>لوحة تحكم شاشة المسجد</h2>
       <button id="closeAdmin">إغلاق ✕</button>
     </div>
-    <div id="adminContent" class="pageZoom show">
+    <div id="adminContent" class="show">
     <div id="adminTabs">
       <button class="tabBtn active" data-tab="times">مواقيت الصلاة</button>
       <button class="tabBtn" data-tab="content">المحتوى</button>
@@ -1267,15 +1269,15 @@ function updateClock(now){
 }
 
 const ADHKAR = [
-  { title:"الاستغفار", text:"أَسْتَغْفِرُ اللَّهَ (×٣)\nاللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ" },
+  { title:"الاستغفار", text:"أَسْتَغْفِرُ اللَّهَ (×3)\nاللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ" },
   { title:"التوحيد", text:"لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، يُحْيِي وَيُمِيتُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ",
-    noteFajrMaghrib:"تُقال ١٠ مرات بعد الفجر والمغرب خاصة", noteOther:"تُقال مرة واحدة بعد باقي الصلوات" },
+    noteFajrMaghrib:"تُقال 10 مرات بعد الفجر والمغرب خاصة", noteOther:"تُقال مرة واحدة بعد باقي الصلوات" },
   { title:"آية الكرسي", text:"اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
     noteFajrMaghrib:"تُقرأ مرة واحدة بعد كل صلاة مكتوبة", noteOther:"تُقرأ مرة واحدة بعد كل صلاة مكتوبة" },
-  { title:"التسبيح والتحميد والتكبير", text:"سُبْحَانَ اللَّهِ (×٣٣)\nالْحَمْدُ لِلَّهِ (×٣٣)\nاللَّهُ أَكْبَرُ (×٣٣)\nثم تمام المائة:\nلَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ",
-    noteFajrMaghrib:"تُقال هذه الأذكار (٣٣، ٣٣، ٣٣) بعد كل صلاة مكتوبة", noteOther:"تُقال هذه الأذكار (٣٣، ٣٣، ٣٣) بعد كل صلاة مكتوبة" },
+  { title:"التسبيح والتحميد والتكبير", text:"سُبْحَانَ اللَّهِ (×33)\nالْحَمْدُ لِلَّهِ (×33)\nاللَّهُ أَكْبَرُ (×33)\nثم تمام المائة:\nلَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ",
+    noteFajrMaghrib:"تُقال هذه الأذكار (33، 33، 33) بعد كل صلاة مكتوبة", noteOther:"تُقال هذه الأذكار (33، 33، 33) بعد كل صلاة مكتوبة" },
   { title:"المعوذات", text:"قُلْ هُوَ اللَّهُ أَحَدٌ (سورة الإخلاص)\nقُلْ أَعُوذُ بِرَبِّ الْفَلَقِ (سورة الفلق)\nقُلْ أَعُوذُ بِرَبِّ النَّاسِ (سورة الناس)",
-    noteFajrMaghrib:"تُقرأ ٣ مرات بعد الفجر والمغرب خاصة", noteOther:"تُقرأ مرة واحدة بعد باقي الصلوات" }
+    noteFajrMaghrib:"تُقرأ 3 مرات بعد الفجر والمغرب خاصة", noteOther:"تُقرأ مرة واحدة بعد باقي الصلوات" }
 ];
 
 let adhanFlashUntil = 0; // طابع زمني (ms): إلى متى يستمر وميض "الأذان" بملء الشاشة
@@ -1513,34 +1515,115 @@ function syncTickerHeight(){
    ============================================================ */
 /* تكبير/تصغير + تحريك عمودي يدوي: عاملان إضافيان يضيفهما المستخدم فوق
    التحجيم التلقائي، يُحفظان محليًا على الجهاز فيبقيان كما تركهما المستخدم
-   بعد إعادة التحميل */
-let manualZoomFactor = 1;
+   بعد إعادة التحميل — وكل مجموعة صفحات (الرئيسية / صفحات العرض الأخرى / لوحة الإعدادات)
+   لها قيمتا تكبير وتحريك مستقلتان تمامًا عن الأخرى */
+let manualZoomFactor = 1;   // الصفحة الرئيسية
 let manualPanY = 0;
+let slidesZoomFactor = 1;   // صفحات العرض الأخرى (الصورة، النص، الأذان، الإقامة، الخطبة، الدعاء، الأذكار، تنبيه الساعة)
+let slidesPanY = 0;
+let adminZoomFactor = 1;    // لوحة الإعدادات (محتوى التبويبات فقط)
+let adminPanY = 0;
+
+function clampZoomFactor(f){ return Math.min(1.6, Math.max(0.5, f)); }
+function clampPanY(y){ return Math.min(400, Math.max(-400, y)); }
+
 (function loadManualAdjustments(){
   const savedZoom = parseFloat(localStorage.getItem("manualZoomFactor"));
   if(!isNaN(savedZoom) && savedZoom > 0) manualZoomFactor = savedZoom;
   const savedPan = parseFloat(localStorage.getItem("manualPanY"));
   if(!isNaN(savedPan)) manualPanY = savedPan;
-  document.documentElement.style.setProperty("--userZoom", String(manualZoomFactor));
-  document.documentElement.style.setProperty("--userPanY", manualPanY + "px");
+
+  const savedSlidesZoom = parseFloat(localStorage.getItem("slidesZoomFactor"));
+  if(!isNaN(savedSlidesZoom) && savedSlidesZoom > 0) slidesZoomFactor = savedSlidesZoom;
+  const savedSlidesPan = parseFloat(localStorage.getItem("slidesPanY"));
+  if(!isNaN(savedSlidesPan)) slidesPanY = savedSlidesPan;
+
+  const savedAdminZoom = parseFloat(localStorage.getItem("adminZoomFactor"));
+  if(!isNaN(savedAdminZoom) && savedAdminZoom > 0) adminZoomFactor = savedAdminZoom;
+  const savedAdminPan = parseFloat(localStorage.getItem("adminPanY"));
+  if(!isNaN(savedAdminPan)) adminPanY = savedAdminPan;
+
+  applySlidesZoom();
+  applyAdminZoom();
 })();
-function applyGlobalPageZoom(){
-  // يعكس نفس درجة التكبير والتحريك اليدوي على كل صفحات دورة العرض
-  // (الصورة، النص، الأذان، الإقامة، الخطبة، الدعاء، الأذكار، تنبيه الساعة)
-  document.documentElement.style.setProperty("--userZoom", String(manualZoomFactor));
-  document.documentElement.style.setProperty("--userPanY", manualPanY + "px");
+function applySlidesZoom(){
+  // يعكس تكبير/تحريك صفحات العرض الأخرى (مستقل عن الصفحة الرئيسية ولوحة الإعدادات)
+  document.documentElement.style.setProperty("--slidesZoom", String(slidesZoomFactor));
+  document.documentElement.style.setProperty("--slidesPanY", slidesPanY + "px");
 }
+function applyAdminZoom(){
+  // يعكس تكبير/تحريك لوحة الإعدادات (مستقل عن الصفحة الرئيسية وصفحات العرض الأخرى)
+  document.documentElement.style.setProperty("--adminZoom", String(adminZoomFactor));
+  document.documentElement.style.setProperty("--adminPanY", adminPanY + "px");
+}
+
+/* تحديد أي مجموعة صفحات ظاهرة حاليًا، حتى تطبَّق أزرار التحكم على المجموعة الصحيحة فقط */
+function getActiveZoomContext(){
+  const adminOverlayEl = document.getElementById("adminOverlay");
+  if(adminOverlayEl && adminOverlayEl.classList.contains("show")) return "admin";
+  const slideIds = ["photoSlide","textSlide","adhanFlash","iqamaFull","khutbahReminder","duaReminder","adhkarFull","clockErrorBanner"];
+  for(const id of slideIds){
+    const el = document.getElementById(id);
+    if(el && el.classList.contains("show")) return "slides";
+  }
+  return "home";
+}
+
+function adjustZoom(delta){
+  const ctx = getActiveZoomContext();
+  if(ctx === "admin"){
+    adminZoomFactor = clampZoomFactor(adminZoomFactor + delta);
+    localStorage.setItem("adminZoomFactor", String(adminZoomFactor));
+    applyAdminZoom();
+  } else if(ctx === "slides"){
+    slidesZoomFactor = clampZoomFactor(slidesZoomFactor + delta);
+    localStorage.setItem("slidesZoomFactor", String(slidesZoomFactor));
+    applySlidesZoom();
+  } else {
+    setManualZoom(manualZoomFactor + delta);
+  }
+}
+function adjustPan(delta){
+  const ctx = getActiveZoomContext();
+  if(ctx === "admin"){
+    adminPanY = clampPanY(adminPanY + delta);
+    localStorage.setItem("adminPanY", String(adminPanY));
+    applyAdminZoom();
+  } else if(ctx === "slides"){
+    slidesPanY = clampPanY(slidesPanY + delta);
+    localStorage.setItem("slidesPanY", String(slidesPanY));
+    applySlidesZoom();
+  } else {
+    setManualPan(manualPanY + delta);
+  }
+}
+function resetActiveZoomContext(){
+  const ctx = getActiveZoomContext();
+  if(ctx === "admin"){
+    adminZoomFactor = 1; adminPanY = 0;
+    localStorage.setItem("adminZoomFactor", "1");
+    localStorage.setItem("adminPanY", "0");
+    applyAdminZoom();
+  } else if(ctx === "slides"){
+    slidesZoomFactor = 1; slidesPanY = 0;
+    localStorage.setItem("slidesZoomFactor", "1");
+    localStorage.setItem("slidesPanY", "0");
+    applySlidesZoom();
+  } else {
+    setManualZoom(1);
+    setManualPan(0);
+  }
+}
+
 function setManualZoom(factor){
-  manualZoomFactor = Math.min(1.6, Math.max(0.5, factor));
+  manualZoomFactor = clampZoomFactor(factor);
   localStorage.setItem("manualZoomFactor", String(manualZoomFactor));
   fitStageContent();
-  applyGlobalPageZoom();
 }
 function setManualPan(y){
-  manualPanY = Math.min(400, Math.max(-400, y));
+  manualPanY = clampPanY(y);
   localStorage.setItem("manualPanY", String(manualPanY));
   fitStageContent();
-  applyGlobalPageZoom();
 }
 
 function fitStageContent(){
@@ -1568,11 +1651,11 @@ function fitStageContent(){
 }
 window.addEventListener("resize", ()=> fitStageContent());
 
-document.getElementById("zoomInBtn").addEventListener("click", ()=> setManualZoom(manualZoomFactor + 0.1));
-document.getElementById("zoomOutBtn").addEventListener("click", ()=> setManualZoom(manualZoomFactor - 0.1));
-document.getElementById("zoomResetBtn").addEventListener("click", ()=> { setManualZoom(1); setManualPan(0); });
-document.getElementById("panUpBtn").addEventListener("click", ()=> setManualPan(manualPanY - 20));
-document.getElementById("panDownBtn").addEventListener("click", ()=> setManualPan(manualPanY + 20));
+document.getElementById("zoomInBtn").addEventListener("click", ()=> adjustZoom(0.1));
+document.getElementById("zoomOutBtn").addEventListener("click", ()=> adjustZoom(-0.1));
+document.getElementById("zoomResetBtn").addEventListener("click", ()=> resetActiveZoomContext());
+document.getElementById("panUpBtn").addEventListener("click", ()=> adjustPan(-20));
+document.getElementById("panDownBtn").addEventListener("click", ()=> adjustPan(20));
 function measureAndApplyTickerSpeed(groupA, track, attemptsLeft){
   const singleWidth = groupA.offsetWidth;
   // إذا كان القياس صغيرًا بشكل غير منطقي (النص لم يُرسم بعد)، أعد المحاولة بدل اعتماد سرعة خاطئة
