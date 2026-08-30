@@ -15,7 +15,7 @@
   :root{
     --bg-deep:#0a2e2b; --bg-mid:#123d38; --bg-deep-night:#061a18;
     --gold:#c9a227; --gold-light:#e8c766; --cream:#f3ecd9;
-    --teal-accent:#1b5e56; --danger:#7a2e2e; --panel:#0e2422;
+    --teal-accent:#1b5e56; --danger:#7a2e2e; --panel:#0e2422; --ann-red:#ff5a4a;
     --slidesZoom:1; --slidesPanY:0px; --adminZoom:1; --adminPanY:0px;
   }
   /* تكبير/تصغير/تحريك صفحات العرض الأخرى (الصورة، النص، الأذان، الإقامة، الخطبة، الدعاء، الأذكار، تنبيه الساعة)
@@ -320,8 +320,8 @@
   #textSlide.slide-ann #textSlideTxt{color:var(--gold-light); font-weight:bold;
     font-size:clamp(3rem,8vh,5.6rem); text-shadow:0 0 50px rgba(201,162,39,0.5);}
 
-  /* إبراز أقوى للإعلان داخل الشريط السفلي المتحرك مقارنة بباقي المحتوى الروتيني */
-  .tickerItemSpan.tiAnn{color:var(--gold-light);}
+  /* إبراز أقوى للإعلان داخل الشريط السفلي المتحرك مقارنة بباقي المحتوى الروتيني: لون مغاير تمامًا (أحمر) بدل الذهبي المعتاد */
+  .tickerItemSpan.tiAnn{color:var(--ann-red); text-shadow:0 0 14px rgba(255,90,74,0.45);}
   .tickerItemSpan.tiAnn .cat{color:#fff; background:linear-gradient(90deg, var(--danger), #a34747);
     padding:3px 14px; border-radius:20px; font-weight:bold; margin-left:14px;}
   .tickerItemSpan.tiAnn::before{content:"📢 ";}
@@ -387,9 +387,6 @@
     border-radius:50%; transition:.3s;}
   .switch input:checked + .slider{background:var(--gold);}
   .switch input:checked + .slider::before{transform:translateX(-20px);}
-  .tplGrid{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;}
-  .tplBtn{background:rgba(255,255,255,0.05); border:1px solid rgba(201,162,39,0.3); color:var(--cream);
-    padding:10px; border-radius:8px; cursor:pointer; font-size:0.85rem; text-align:right;}
   .annItem{display:flex; justify-content:space-between; align-items:center; gap:10px;
     background:rgba(255,255,255,0.04); border:1px solid rgba(201,162,39,0.2); border-radius:10px;
     padding:10px 12px; margin-bottom:8px;}
@@ -649,8 +646,6 @@
       </div>
 
       <div class="tabPane" id="tab-ann">
-        <div class="sectionTitle">قوالب جاهزة</div>
-        <div class="tplGrid" id="tplGrid"></div>
         <div class="sectionTitle">إعلان مخصص</div>
         <div class="fieldRow" style="flex-direction:column; align-items:stretch;">
           <textarea id="customAnnText" placeholder="اكتب نص الإعلان هنا..."></textarea>
@@ -856,15 +851,6 @@ const DEFAULT_CONTENT = [
  {cat:"نصيحة", txt:"سارع إلى صلة رحمك ولو بمكالمة قصيرة أو زيارة.", on:true},
  {cat:"نصيحة", txt:"اجعل لسانك رطبًا بذكر الله في كل حين.", on:true},
  {cat:"نصيحة", txt:"احفظ وقتك ولا تضيعه فيما لا ينفعك في دنياك وآخرتك.", on:true},
-];
-
-const DEFAULT_TEMPLATES = [
- "🕌 حملة تبرعات لطلاء المسجد — نسأل الله أن يجزي المتبرعين خير الجزاء.",
- "🕌 حملة تبرعات لتجديد سجاد المسجد — كل مساهمة محتسبة بإذن الله.",
- "💡 حملة تبرعات لصيانة إنارة المسجد — شاركوا في الأجر.",
- "📢 تذكير: درس ديني بعد صلاة المغرب بإمامة الشيخ.",
- "📢 تذكير بأهمية إخراج الزكاة في وقتها.",
- "🤝 يسر إدارة المسجد دعوتكم للمساهمة في أعمال الصيانة والتحسين."
 ];
 
 /* ============================================================
@@ -2284,25 +2270,6 @@ function renderContentList(){
 }
 
 /* ---- تبويب الإعلانات ---- */
-function renderTemplates(){
-  const grid = document.getElementById("tplGrid");
-  grid.innerHTML = "";
-  DEFAULT_TEMPLATES.forEach(t=>{
-    const btn = document.createElement("button");
-    btn.className = "tplBtn";
-    btn.textContent = t;
-    btn.addEventListener("click", ()=>{
-      state.announcements.push({ txt:t, id:Date.now()+Math.random() });
-      saveState();
-      forceAnnUntil = Date.now() + 120000; // إظهار فوري على الشريط فور الحفظ، دون انتظار الدورة
-      tickerMode = "ann";
-      renderAnnList();
-      rebuildTicker();
-      flashSaved(btn, "✅ أُضيف!");
-    });
-    grid.appendChild(btn);
-  });
-}
 function renderAnnList(){
   const list = document.getElementById("annList");
   list.innerHTML = "";
@@ -2476,7 +2443,6 @@ function populateAdminFromState(){
   setMode(state.mode);
 
   renderContentList();
-  renderTemplates();
   renderAnnList();
   renderImgGrid();
   renderBgStatus();
