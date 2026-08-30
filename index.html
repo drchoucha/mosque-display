@@ -306,6 +306,26 @@
   #textSlide.slide-hadith #textSlideTxt{color:var(--cream);}
   #textSlide.slide-hadith #textSlideTxt::before{content:"📜 "; opacity:0.8;}
 
+  /* مظهر مميّز وقوي للإعلانات (أمر طارئ يستحق لفت انتباه واضح، بخلاف الأحاديث والآيات الهادئة) */
+  #textSlide.slide-ann{background:radial-gradient(ellipse at 50% 25%, #2a1206 0%, #170a03 60%, #0a0501 100%);}
+  #textSlide.slide-ann #textSlideFrame{border-color:var(--danger);
+    animation:slideFrameIn .7s cubic-bezier(.2,.8,.2,1), annPulse 2.1s ease-in-out infinite;}
+  @keyframes annPulse{
+    0%,100%{box-shadow:0 0 60px rgba(122,46,46,0.45), inset 0 0 40px rgba(201,162,39,0.1);}
+    50%{box-shadow:0 0 110px rgba(201,162,39,0.7), inset 0 0 55px rgba(201,162,39,0.28);}
+  }
+  #textSlide.slide-ann #textSlideCat{border-color:var(--gold); color:#fff; font-weight:bold;
+    background:linear-gradient(90deg, var(--danger), #a34747); letter-spacing:1px;}
+  #textSlide.slide-ann #textSlideCat::before{content:"📢 ";}
+  #textSlide.slide-ann #textSlideTxt{color:var(--gold-light); font-weight:bold;
+    font-size:clamp(3rem,8vh,5.6rem); text-shadow:0 0 50px rgba(201,162,39,0.5);}
+
+  /* إبراز أقوى للإعلان داخل الشريط السفلي المتحرك مقارنة بباقي المحتوى الروتيني */
+  .tickerItemSpan.tiAnn{color:var(--gold-light);}
+  .tickerItemSpan.tiAnn .cat{color:#fff; background:linear-gradient(90deg, var(--danger), #a34747);
+    padding:3px 14px; border-radius:20px; font-weight:bold; margin-left:14px;}
+  .tickerItemSpan.tiAnn::before{content:"📢 ";}
+
   /* admin gear */
   #gearBtn{position:fixed; bottom:16px; left:16px; z-index:90; width:52px; height:52px; border-radius:50%;
     background:rgba(201,162,39,0.15); border:1px solid var(--gold); color:var(--gold-light); font-size:1.5rem;
@@ -1478,14 +1498,42 @@ function escapeHtml(str){
   d.textContent = str;
   return d.innerHTML;
 }
-function buildMarqueeHTML(){
-  const activeContent = state.content.filter(c=>c.on).map(c=>({cat:c.cat, txt:c.txt}));
+/* نافذة زمنية واضحة ومخصصة للإعلان على الشريط السفلي: يعمل الشريط بمحتواه المعتاد
+   طوال الوقت، وكل 10 دقائق يُخصَّص أول دقيقتين لعرض الإعلان(ات) فقط متكررة،
+   بدل خلط الإعلان وسط بقية المحتوى بشكل دائم */
+let tickerMode = "normal"; // "normal" أو "ann"
+function computeDesiredTickerMode(){
+  if(!state.announcements || state.announcements.length===0) return "normal";
+  const cyclePos = new Date().getMinutes() % 10; // 0..9
+  return cyclePos < 2 ? "ann" : "normal"; // أول دقيقتين من كل 10 دقائق مخصصتان للإعلان
+}
+function refreshTickerMode(){
+  const desired = computeDesiredTickerMode();
+  if(desired !== tickerMode){
+    tickerMode = desired;
+    rebuildTicker(); // إعادة بناء الشريط فقط عند تغيّر الوضع فعليًا لتفادي أي قطع غير ضروري
+  }
+}
+setInterval(refreshTickerMode, 15000); // فحص كل 15 ثانية للانتقال في الوقت المناسب بدقة كافية
+refreshTickerMode(); // ضبط الوضع الصحيح فور تحميل الشاشة (بدل انتظار أول فحص دوري)
+
+function buildAnnouncementMarqueeHTML(){
   const anns = state.announcements.map(a=>({cat:"إعلان", txt:a.txt}));
+  if(anns.length===0) return "";
+  let items = [];
+  for(let i=0;i<6;i++) items = items.concat(anns); // تكرار كافٍ لملء الشريط طوال نافذة العرض المخصصة
+  return items.map(it =>
+    `<span class="tickerItemSpan tiAnn">${it.cat?`<span class="cat">[${escapeHtml(it.cat)}]</span>`:""}${escapeHtml(it.txt)}</span>`
+  ).join('<span class="tickerSep">◆</span>');
+}
+function buildMarqueeHTML(){
+  if(tickerMode === "ann"){
+    const annHtml = buildAnnouncementMarqueeHTML();
+    if(annHtml) return annHtml;
+  }
+  const activeContent = state.content.filter(c=>c.on).map(c=>({cat:c.cat, txt:c.txt}));
   const remote = (state.remoteContent||[]).map(c=>({cat:c.cat, txt:c.txt}));
-  // الإعلانات أمر طارئ وليس روتينيًا: تُقدَّم في مقدمة الشريط وتتكرر أكثر من غيرها
-  const annsRepeated = [];
-  anns.forEach(a => { annsRepeated.push(a); annsRepeated.push(a); });
-  let items = [...annsRepeated, ...activeContent, ...remote];
+  let items = [...activeContent, ...remote];
   if(state.occasionContentEnabled !== false){
     const now = new Date();
     const hijToday = gregorianToHijriCorrected(now);
@@ -1702,21 +1750,9 @@ function buildRotationQueue(){
       base.push({type:"text", cat:it.cat, txt:it.txt})
     );
   }
-  const anns = state.announcements.map(a => ({type:"text", cat:"إعلان", txt:a.txt}));
-  if(anns.length===0) return base;
-  if(base.length===0) return anns;
-  // الإعلان أمر طارئ وليس روتينيًا: يُقحم بشكل متكرر ومتقدم بدل انتظار دوره الطبيعي
-  // في القائمة — يظهر فورًا في البداية، ثم يتكرر كل عنصرين تقريبًا طوال الدورة
-  const queue = [anns[0]];
-  let annIdx = 0;
-  base.forEach((item, i) => {
-    queue.push(item);
-    if((i+1) % 2 === 0){
-      annIdx = (annIdx+1) % anns.length;
-      queue.push(anns[annIdx]);
-    }
-  });
-  return queue;
+  // ملاحظة: الإعلانات لم تعد تُقحَم هنا؛ لها الآن دورة عرض مستقلة أعلى تواترًا (انظر showAnnouncementSlide)
+  // حتى لا تُغرَق أو تتأخر ضمن قائمة طويلة من الأحاديث والآيات
+  return base;
 }
 function showFullscreenSlide(){
   if(document.getElementById("blackout").classList.contains("show")) return; // لا تتداخل مع وقت الصلاة
@@ -1726,6 +1762,7 @@ function showFullscreenSlide(){
   if(document.getElementById("duaReminder").classList.contains("show")) return; // ولا مع تذكير الدعاء بين الأذان والإقامة
   if(document.getElementById("adhkarFull").classList.contains("show")) return; // ولا مع أذكار ما بعد الصلاة
   if(document.getElementById("clockErrorBanner").classList.contains("show")) return; // لا تعرض محتوى مناسبات بناءً على ساعة خاطئة
+  if(document.getElementById("textSlide").classList.contains("slide-ann")) return; // لا تقاطع إعلانًا معروضًا حاليًا
   const queue = buildRotationQueue();
   if(queue.length===0) return;
   const item = queue[rotationIdx % queue.length];
@@ -1753,6 +1790,43 @@ function showFullscreenSlide(){
   }, 60000); // يبقى ظاهرًا لمدة دقيقة كاملة
 }
 setInterval(showFullscreenSlide, 600000); // كل 10 دقائق، تبدأ من أول دورة بعد فتح الشاشة
+
+/* ============================================================
+   دورة عرض مستقلة وأعلى تواترًا خاصة بالإعلانات فقط (بملء الشاشة)
+   الإعلان أمر طارئ يستحق اهتمامًا واضحًا، فلا يُترك لينتظر دوره
+   وسط عشرات الأحاديث والآيات ضمن الدورة العامة كل 10 دقائق
+   ============================================================ */
+let annRotationIdx = 0;
+function showAnnouncementSlide(){
+  if(!state.announcements || state.announcements.length===0) return;
+  if(document.getElementById("blackout").classList.contains("show")) return;
+  if(document.getElementById("adhanFlash").classList.contains("show")) return;
+  if(document.getElementById("iqamaFull").classList.contains("show")) return;
+  if(document.getElementById("khutbahReminder").classList.contains("show")) return;
+  if(document.getElementById("duaReminder").classList.contains("show")) return;
+  if(document.getElementById("adhkarFull").classList.contains("show")) return;
+  if(document.getElementById("clockErrorBanner").classList.contains("show")) return;
+  const photoSlide = document.getElementById("photoSlide");
+  const textSlide = document.getElementById("textSlide");
+  // لا تقاطع أي صورة/نص من الدورة العامة معروض حاليًا؛ ستُعاد المحاولة في الدورة القادمة
+  if(photoSlide.classList.contains("show") || textSlide.classList.contains("show")) return;
+
+  const ann = state.announcements[annRotationIdx % state.announcements.length];
+  annRotationIdx++;
+  document.getElementById("textSlideCat").textContent = "إعلان";
+  document.getElementById("textSlideTxt").textContent = ann.txt;
+  document.getElementById("textSlideSource").textContent = "";
+  textSlide.classList.remove("slide-ayah","slide-hadith");
+  textSlide.classList.add("slide-ann","show");
+
+  setTimeout(()=>{
+    textSlide.classList.remove("show","slide-ann");
+  }, 60000); // يبقى ظاهرًا لمدة دقيقة كاملة، بنفس مدة بقية المحتوى
+}
+// أول ظهور بعد دقيقتين من فتح الشاشة، ثم كل 4 دقائق طوال الوقت (أعلى تواترًا بكثير من الدورة العامة)
+setTimeout(showAnnouncementSlide, 120000);
+setInterval(showAnnouncementSlide, 240000);
+
 trySyncHijriOffset(); // محاولة مزامنة فورية عند فتح التطبيق إن وُجد إنترنت
 setInterval(trySyncHijriOffset, 3600000); // إعادة المحاولة كل ساعة (تلقائيًا تتجاهل نفسها لو نفس اليوم أو بلا إنترنت)
 trySyncYearlyTimes(); // تحميل جدول مواقيت السنة كاملة تلقائيًا بلا أي تدخل، إن توفر إنترنت ولم تكن محدّثة لهذه السنة
