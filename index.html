@@ -177,7 +177,7 @@
   #blackout .bTitle{font-size:2.4rem; margin-bottom:14px;}
   #blackout .bSub{font-size:clamp(1.6rem,3.4vh,2.3rem); color:var(--cream); opacity:0.9; max-width:90%; line-height:1.6;}
 
-  #zoomControls{position:fixed; right:10px; bottom:10px; z-index:90; display:flex; gap:6px;
+  #zoomControls{position:fixed; right:10px; bottom:10px; z-index:150; display:flex; gap:6px;
     opacity:0.28; transition:opacity .25s ease;}
   #zoomControls:hover{opacity:0.95;}
   #zoomControls button{width:34px; height:34px; border-radius:8px; border:1px solid var(--gold);
@@ -325,10 +325,13 @@
   #closeAdmin{background:none; border:1px solid var(--gold); color:var(--gold-light); border-radius:8px;
     padding:6px 14px; cursor:pointer; font-size:1rem;}
   #adminTabs{display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; border-bottom:1px solid rgba(201,162,39,0.2);}
+  /* يحتوي التبويبات والمحتوى معًا ليُطبَّق عليه التكبير/التحريك دون المساس بشريط العنوان وزر الإغلاق،
+     فيبقى زر الإغلاق مضمون الظهور دائمًا مهما كانت درجة التكبير/التحريك المختارة */
+  #adminContent{flex:1; display:flex; flex-direction:column; overflow:hidden; min-height:0;}
+  #adminBody{flex:1; overflow-y:auto; padding:16px 20px;}
   .tabBtn{background:rgba(255,255,255,0.04); border:1px solid rgba(201,162,39,0.3); color:var(--cream);
     padding:8px 14px; border-radius:8px; cursor:pointer; font-size:0.95rem;}
   .tabBtn.active{background:var(--gold); color:#1a1400; font-weight:bold; border-color:var(--gold);}
-  #adminBody{flex:1; overflow-y:auto; padding:16px 20px;}
   .tabPane{display:none;}
   .tabPane.active{display:block;}
   .fieldRow{display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;}
@@ -538,12 +541,13 @@
 
 <button id="gearBtn" title="لوحة التحكم">⚙</button>
 
-<div id="adminOverlay" class="pageZoom">
+<div id="adminOverlay">
   <div id="adminPanel">
     <div id="adminHeader">
       <h2>لوحة تحكم شاشة المسجد</h2>
       <button id="closeAdmin">إغلاق ✕</button>
     </div>
+    <div id="adminContent" class="pageZoom show">
     <div id="adminTabs">
       <button class="tabBtn active" data-tab="times">مواقيت الصلاة</button>
       <button class="tabBtn" data-tab="content">المحتوى</button>
@@ -694,6 +698,7 @@
         <button class="btnDanger" id="resetAllBtn">إعادة كل الإعدادات للوضع الافتراضي</button>
       </div>
 
+    </div>
     </div>
   </div>
 </div>
@@ -1947,6 +1952,21 @@ document.getElementById("closeAdmin").addEventListener("click", ()=>{
   adminOverlay.classList.remove("show");
   saveBar.classList.remove("show");
   rebuildTicker();
+});
+// طريقة إغلاق احتياطية (النقر خارج اللوحة أو زر Escape) لضمان عدم الانحباس داخل الإعدادات
+adminOverlay.addEventListener("click", (e)=>{
+  if(e.target === adminOverlay){
+    adminOverlay.classList.remove("show");
+    saveBar.classList.remove("show");
+    rebuildTicker();
+  }
+});
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape" && adminOverlay.classList.contains("show")){
+    adminOverlay.classList.remove("show");
+    saveBar.classList.remove("show");
+    rebuildTicker();
+  }
 });
 
 document.querySelectorAll(".tabBtn").forEach(btn=>{
