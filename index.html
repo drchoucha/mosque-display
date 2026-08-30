@@ -1502,8 +1502,10 @@ function escapeHtml(str){
    طوال الوقت، وكل 10 دقائق يُخصَّص أول دقيقتين لعرض الإعلان(ات) فقط متكررة،
    بدل خلط الإعلان وسط بقية المحتوى بشكل دائم */
 let tickerMode = "normal"; // "normal" أو "ann"
+let forceAnnUntil = 0; // طابع زمني: طالما الوقت الحالي أقل منه، يُفرض وضع "ann" فورًا (عرض فوري عند إضافة إعلان جديد، دون انتظار نافذة الدورة)
 function computeDesiredTickerMode(){
   if(!state.announcements || state.announcements.length===0) return "normal";
+  if(Date.now() < forceAnnUntil) return "ann";
   const cyclePos = new Date().getMinutes() % 10; // 0..9
   return cyclePos < 2 ? "ann" : "normal"; // أول دقيقتين من كل 10 دقائق مخصصتان للإعلان
 }
@@ -1823,9 +1825,9 @@ function showAnnouncementSlide(){
     textSlide.classList.remove("show","slide-ann");
   }, 60000); // يبقى ظاهرًا لمدة دقيقة كاملة، بنفس مدة بقية المحتوى
 }
-// أول ظهور بعد دقيقتين من فتح الشاشة، ثم كل 4 دقائق طوال الوقت (أعلى تواترًا بكثير من الدورة العامة)
-setTimeout(showAnnouncementSlide, 120000);
-setInterval(showAnnouncementSlide, 240000);
+// يظهر كل ساعة كاملة (بدل كل 4 دقائق سابقًا)، بنفس المواصفات: لون أحمر، إطار وميض، ويبقى لمدة دقيقة
+setTimeout(showAnnouncementSlide, 3600000);
+setInterval(showAnnouncementSlide, 3600000);
 
 trySyncHijriOffset(); // محاولة مزامنة فورية عند فتح التطبيق إن وُجد إنترنت
 setInterval(trySyncHijriOffset, 3600000); // إعادة المحاولة كل ساعة (تلقائيًا تتجاهل نفسها لو نفس اليوم أو بلا إنترنت)
@@ -2292,6 +2294,8 @@ function renderTemplates(){
     btn.addEventListener("click", ()=>{
       state.announcements.push({ txt:t, id:Date.now()+Math.random() });
       saveState();
+      forceAnnUntil = Date.now() + 120000; // إظهار فوري على الشريط فور الحفظ، دون انتظار الدورة
+      tickerMode = "ann";
       renderAnnList();
       rebuildTicker();
       flashSaved(btn, "✅ أُضيف!");
@@ -2320,6 +2324,8 @@ document.getElementById("addAnnBtn").addEventListener("click", ()=>{
   if(ta.value.trim()){
     state.announcements.push({ txt:ta.value.trim(), id:Date.now()+Math.random() });
     saveState();
+    forceAnnUntil = Date.now() + 120000; // إظهار فوري على الشريط فور الحفظ، دون انتظار الدورة
+    tickerMode = "ann";
     ta.value = "";
     renderAnnList();
     rebuildTicker();
