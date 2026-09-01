@@ -711,6 +711,12 @@
           <input type="checkbox" id="in-occasionEnabled" class="slider-checkbox">
           <span style="font-size:.85rem; color:var(--cream); opacity:.75;">إظهار أحاديث ونصائح خاصة بيوم الجمعة، شعبان، رمضان، العيدين، عرفة، وعاشوراء تلقائيًا في مواعيدها ضمن دورة العرض</span>
         </div>
+        <div class="sectionTitle">ملء الشاشة التلقائي عند الفتح</div>
+        <div class="fieldRow">
+          <label>تفعيل تلقائي</label>
+          <input type="checkbox" id="in-autoFullscreen" class="slider-checkbox">
+          <span style="font-size:.85rem; color:var(--cream); opacity:.75;">فتح التطبيق مباشرة بملء الشاشة عند التشغيل. معطّل افتراضيًا — يُفضّل تفعيله فقط على شاشة العرض الفعلية (تلفاز/شاشة المسجد)، وتركه معطّلاً على الهاتف عند الاختبار أو التحكم.</span>
+        </div>
         <div class="sectionTitle">إعادة الضبط</div>
         <button class="btnDanger" id="resetAllBtn">إعادة كل الإعدادات للوضع الافتراضي</button>
       </div>
@@ -2073,13 +2079,15 @@ function requestFullscreenSafely(){
     req.call(el).catch(()=>{});
   }
 }
-requestFullscreenSafely();
-["touchstart","click"].forEach(evt=>{
-  document.addEventListener(evt, function onceHandler(){
-    requestFullscreenSafely();
-    document.removeEventListener(evt, onceHandler);
-  }, { once:true });
-});
+if(state.autoFullscreenEnabled === true){
+  requestFullscreenSafely();
+  ["touchstart","click"].forEach(evt=>{
+    document.addEventListener(evt, function onceHandler(){
+      requestFullscreenSafely();
+      document.removeEventListener(evt, onceHandler);
+    }, { once:true });
+  });
+}
 
 /* ============================================================
    لوحة التحكم - عرض/إخفاء
@@ -2414,6 +2422,7 @@ function populateAdminFromState(){
   document.getElementById("in-hijriOffset").value = state.hijriOffset || 0;
   document.getElementById("in-hijriAutoSync").checked = state.hijriAutoSync !== false;
   document.getElementById("in-occasionEnabled").checked = state.occasionContentEnabled !== false;
+  document.getElementById("in-autoFullscreen").checked = state.autoFullscreenEnabled === true;
   document.getElementById("mosqueName").textContent = state.mosqueName;
 
   document.getElementById("in-fajr").value = state.prayerTimes.fajr;
@@ -2456,6 +2465,7 @@ document.getElementById("saveBtn").addEventListener("click", ()=>{
   state.hijriOffset = Number(document.getElementById("in-hijriOffset").value) || 0;
   state.hijriAutoSync = document.getElementById("in-hijriAutoSync").checked;
   state.occasionContentEnabled = document.getElementById("in-occasionEnabled").checked;
+  state.autoFullscreenEnabled = document.getElementById("in-autoFullscreen").checked;
   document.getElementById("mosqueName").textContent = state.mosqueName;
 
   state.prayerTimes = {
