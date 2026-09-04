@@ -138,7 +138,10 @@
 
   #tickerWrap{position:fixed; bottom:10px; right:0; left:0; z-index:15; direction:ltr;
     background:rgba(6,26,24,0.94); border-top:2px solid var(--gold); border-bottom:2px solid var(--gold);
-    padding:clamp(10px,2vh,20px) 0; overflow:hidden; white-space:nowrap; line-height:1.2;}
+    padding:clamp(10px,2vh,20px) 0; overflow:hidden; white-space:nowrap; line-height:1.2;
+    transition:opacity .6s ease, transform .6s ease; opacity:1; transform:translateY(0);}
+  #tickerWrap.tickerHidden{opacity:0; transform:translateY(100%); pointer-events:none;
+    padding-top:0; padding-bottom:0; border-width:0; height:0;}
   #tickerTrack{display:inline-block; white-space:nowrap; direction:rtl;
     animation:marqueeScroll linear infinite reverse; animation-duration:70s;}
   .tickerGroup{display:inline-block; white-space:nowrap;}
@@ -180,10 +183,10 @@
   #blackout .bSub{font-size:clamp(1.6rem,3.4vh,2.3rem); color:var(--cream); opacity:0.9; max-width:90%; line-height:1.6;}
 
   #zoomControls{position:fixed; right:10px; bottom:10px; z-index:150; display:flex; gap:6px;
-    opacity:0.28; transition:opacity .25s ease;}
-  #zoomControls:hover{opacity:0.95;}
-  #zoomControls button{width:34px; height:34px; border-radius:8px; border:1px solid var(--gold);
-    background:rgba(20,12,4,0.75); color:var(--cream); font-size:1.1rem; line-height:1; cursor:pointer;
+    opacity:0.1; transition:opacity .25s ease;}
+  #zoomControls:hover{opacity:0.9;}
+  #zoomControls button{width:30px; height:30px; border-radius:8px; border:1px solid var(--gold);
+    background:rgba(20,12,4,0.6); color:var(--cream); font-size:1rem; line-height:1; cursor:pointer;
     display:flex; align-items:center; justify-content:center; font-family:inherit;}
   #zoomControls button:active{transform:scale(0.92);}
   #zoomResetBtn{font-size:0.95rem;}
@@ -641,6 +644,19 @@
       </div>
 
       <div class="tabPane" id="tab-content">
+        <div class="sectionTitle">إضافة محتوى جديد</div>
+        <div class="fieldRow">
+          <label>النوع</label>
+          <select id="in-newContentCat">
+            <option value="حديث">حديث</option>
+            <option value="آية">آية</option>
+            <option value="نصيحة">نصيحة</option>
+          </select>
+        </div>
+        <div class="fieldRow" style="flex-direction:column; align-items:stretch;">
+          <textarea id="newContentText" placeholder="اكتب النص هنا..."></textarea>
+          <button class="btnGold" id="addContentBtn" style="margin-top:8px; align-self:flex-start;">إضافة</button>
+        </div>
         <div class="sectionTitle">مكتبة المحتوى (أحاديث، آيات، نصائح)</div>
         <div id="contentList"></div>
       </div>
@@ -1317,6 +1333,15 @@ function updatePrayers(now){
 
   document.getElementById("nextPrayerName").textContent = prayerLabel(next.key, next.date);
   document.getElementById("countdown").textContent = fmtHMS(next.date-now);
+
+  /* الشريط المتحرك السفلي: يظهر فقط خلال ربع الساعة السابقة لكل صلاة، وربع الساعة
+     التالية لانتهاء أذكار ما بعد الصلاة — وبقية الوقت يبقى مخفيًا ليترك المساحة
+     كاملة لمحتوى الشاشة الرئيسي (يتمدد تلقائيًا بفضل آلية التحجيم الذكي القائمة) */
+  const TICKER_WINDOW_MS = 15*60000;
+  const inPreArrivalWindow = (next.date - now) <= TICKER_WINDOW_MS && (next.date - now) > 0;
+  const inPostAdhkarWindow = now.getTime() >= adhkarUntil && now.getTime() < (adhkarUntil + TICKER_WINDOW_MS) && adhkarUntil > 0;
+  const tickerShouldShow = inPreArrivalWindow || inPostAdhkarWindow;
+  document.getElementById("tickerWrap").classList.toggle("tickerHidden", !tickerShouldShow);
 
   todays.forEach(p=>{
     const card = document.querySelector(`.prayerCard[data-key="${p.key}"]`);
@@ -2264,8 +2289,9 @@ function renderContentList(){
     const row = document.createElement("div");
     row.className = "contentItem";
     row.innerHTML = `
-      <div class="txt"><span class="cat">${item.cat}</span>${item.txt}</div>
+      <div class="txt"><span class="cat">${escapeHtml(item.cat)}</span>${escapeHtml(item.txt)}</div>
       <label class="switch"><input type="checkbox" ${item.on?"checked":""} data-idx="${idx}"><span class="slider"></span></label>
+      <button class="btnDanger" data-del="${idx}">حذف</button>
     `;
     list.appendChild(row);
   });
@@ -2275,7 +2301,27 @@ function renderContentList(){
       saveState();
     });
   });
+  list.querySelectorAll("button[data-del]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      state.content.splice(Number(btn.dataset.del), 1);
+      saveState();
+      renderContentList();
+      rebuildTicker();
+    });
+  });
 }
+document.getElementById("addContentBtn").addEventListener("click", ()=>{
+  const ta = document.getElementById("newContentText");
+  const cat = document.getElementById("in-newContentCat").value;
+  if(ta.value.trim()){
+    state.content.push({ cat, txt:ta.value.trim(), on:true });
+    saveState();
+    ta.value = "";
+    renderContentList();
+    rebuildTicker();
+    flashSaved(document.getElementById("addContentBtn"), "✅ تمت الإضافة!");
+  }
+});
 
 /* ---- تبويب الإعلانات ---- */
 function renderAnnList(){
