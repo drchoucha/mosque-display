@@ -1,0 +1,7 @@
+#!/bin/sh
+# يرفع رقم CACHE_VERSION تلقائيًا قبل كل commit ويضيف التعديل إلى نفس الـ commit.
+ROOT="$(git rev-parse --show-toplevel)"
+
+node "$ROOT/bump-cache-version.js" || exit 1
+
+git add "$ROOT/service-worker.js"
