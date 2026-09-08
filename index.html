@@ -201,6 +201,18 @@
   #blackout.iconOnly .bTitle, #blackout.iconOnly .bSub{display:none;}
   #blackout.iconOnly .phoneIcon{margin-bottom:0;}
 
+  /* أيقونة "أغلق هاتفك" الوامضة: تظهر بملء الشاشة لأول عشر ثوانٍ من الإقامة، بدون أي نص */
+  #blackout .iconWrap{display:none; align-items:center; justify-content:center;}
+  #blackout .iconWrap.show{display:flex;}
+  #blackout .phoneMuteIcon{width:clamp(120px,24vh,230px); height:clamp(120px,24vh,230px); color:#ffffff;
+    animation:phoneMuteBlink 1s steps(1,end) infinite;}
+  @keyframes phoneMuteBlink{0%,49%{opacity:1;} 50%,100%{opacity:0.12;}}
+
+  /* اسم التطبيق في الركن العلوي الأيمن أثناء تعتيم الشاشة وقت الصلاة (حتى انقضائها) */
+  #blackout .bCornerLabel{position:absolute; top:22px; right:26px; z-index:81; display:none;
+    font-size:clamp(1.05rem,2.3vh,1.55rem); font-weight:bold; color:var(--gold-light); letter-spacing:.5px;}
+  #blackout .bCornerLabel.show{display:block;}
+
   /* أذان: وميض بملء الشاشة، له الأولوية على أي محتوى آخر (صور/خلفية) */
   #adhanFlash{position:fixed; top:0; right:0; bottom:0; left:0; z-index:92; display:none;
     align-items:center; justify-content:flex-start; flex-direction:column; text-align:center; background:#000;
@@ -510,7 +522,7 @@
     <div class="prayerCard" data-key="isha"><div class="pName">العشاء</div><div class="pTime">--:--</div><div class="pGap"></div></div>
   </div>
   </div>
-  <div id="devCredit">د. ن شوشة</div>
+  <div id="devCredit">د. ن ش</div>
 </div>
 
 <div id="tickerWrap">
@@ -524,7 +536,17 @@
 
 <div id="nextPrayerBar"><div id="nextPrayerBarFill"></div></div>
 
-<div id="blackout"></div>
+<div id="blackout">
+  <div class="iconWrap" id="blackoutIconWrap">
+    <svg class="phoneMuteIcon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="62" y="18" width="76" height="158" rx="14"/>
+      <line x1="86" y1="148" x2="114" y2="148"/>
+      <circle cx="100" cy="100" r="90"/>
+      <line x1="36" y1="36" x2="164" y2="164"/>
+    </svg>
+  </div>
+  <div class="bCornerLabel" id="blackoutCornerLabel">شاشة المسجد</div>
+</div>
 
 <div id="adhanFlash" class="slideZoom">
   <div class="flashWord">الأذان</div>
@@ -1337,7 +1359,7 @@ function updatePrayers(now){
   /* الشريط المتحرك السفلي: يظهر فقط خلال ربع الساعة السابقة لكل صلاة، وربع الساعة
      التالية لانتهاء أذكار ما بعد الصلاة — وبقية الوقت يبقى مخفيًا ليترك المساحة
      كاملة لمحتوى الشاشة الرئيسي (يتمدد تلقائيًا بفضل آلية التحجيم الذكي القائمة) */
-  const TICKER_WINDOW_MS = 15*60000;
+  const TICKER_WINDOW_MS = tickerCycleMs; // يظهر الشريط لمدة دورة واحدة كاملة قبل الصلاة وبعد الأذكار، تطول أو تقصر تلقائيًا حسب طول المحتوى المفعّل
   const inPreArrivalWindow = (next.date - now) <= TICKER_WINDOW_MS && (next.date - now) > 0;
   const inPostAdhkarWindow = now.getTime() >= adhkarUntil && now.getTime() < (adhkarUntil + TICKER_WINDOW_MS) && adhkarUntil > 0;
   const tickerShouldShow = inPreArrivalWindow || inPostAdhkarWindow;
@@ -1374,19 +1396,20 @@ function updatePrayers(now){
   const inAdhanFlash = Date.now() < adhanFlashUntil;
   adhanFlash.classList.toggle("show", inAdhanFlash);
 
-  let inPrayer=false, inPrayerKey=null;
+  let inPrayer=false, inPrayerKey=null, inPrayerIsFriday=false;
   let inIqamaGap=false, gapKey=null, gapIqamaDate=null, gapAdhanDate=null;
   for(const k of order){
     const adhan = toDateToday(times[k]);
     let iqama, end;
-    if(k==="dhuhr" && adhan.getDay()===5){
+    const isFridayDhuhrK = (k==="dhuhr" && adhan.getDay()===5);
+    if(isFridayDhuhrK){
       const t = getFridayJumuahTiming(adhan);
       iqama = t.iqama; end = t.end;
     }else{
       iqama = new Date(adhan.getTime() + (state.iqamaGap[k]||15)*60000);
       end = new Date(iqama.getTime() + (state.prayerDuration||8)*60000);
     }
-    if(now>=iqama && now<end){ inPrayer=true; inPrayerKey=k; break; }
+    if(now>=iqama && now<end){ inPrayer=true; inPrayerKey=k; inPrayerIsFriday=isFridayDhuhrK; break; }
     if(now>=adhan && now<iqama){ inIqamaGap=true; gapKey=k; gapIqamaDate=iqama; gapAdhanDate=adhan; }
   }
 
@@ -1420,10 +1443,15 @@ function updatePrayers(now){
   document.getElementById("duaReminder").classList.toggle("show", inDuaReminder && !inAdhanFlash && !inKhutbahReminder);
 
   // عند انتقال الحالة من "قبل الإقامة" إلى "الإقامة" مباشرة: أطلق مرحلة الرمز فقط لمدة 10 ثوانٍ
-  if(!wasInPrayer && inPrayer){
+  // (يُستثنى من هذا كله صلاة الجمعة: تبقى شاشتها معتّمة كالمعتاد دون أيقونة الهاتف ودون اسم التطبيق في الزاوية)
+  if(!wasInPrayer && inPrayer && !inPrayerIsFriday){
     iqamaJustStarted = Date.now() + 10000;
   }
-  blackout.classList.toggle("iconOnly", Date.now() < iqamaJustStarted);
+  const showPhoneIconPhase = inPrayer && !inPrayerIsFriday && Date.now() < iqamaJustStarted;
+  const showCornerLabelPhase = inPrayer && !inPrayerIsFriday && !showPhoneIconPhase;
+  blackout.classList.toggle("iconOnly", showPhoneIconPhase);
+  document.getElementById("blackoutIconWrap").classList.toggle("show", showPhoneIconPhase);
+  document.getElementById("blackoutCornerLabel").classList.toggle("show", showCornerLabelPhase);
 
   // عند انتقال الحالة من "داخل الصلاة" إلى "انتهت الصلاة" مباشرة: أطلق شاشة أذكار ما بعد الصلاة
   if(wasInPrayer && !inPrayer){
@@ -1519,6 +1547,7 @@ function escapeHtml(str){
    طوال الوقت، وكل 10 دقائق يُخصَّص أول دقيقتين لعرض الإعلان(ات) فقط متكررة،
    بدل خلط الإعلان وسط بقية المحتوى بشكل دائم */
 let tickerMode = "normal"; // "normal" أو "ann"
+let tickerCycleMs = 45000; // مدة الدورة الكاملة الحالية للشريط بالمللي ثانية؛ تُحدَّث تلقائيًا عند كل إعادة بناء (تعتمد على طول المحتوى المفعّل فعليًا)
 let forceAnnUntil = 0; // طابع زمني: طالما الوقت الحالي أقل منه، يُفرض وضع "ann" فورًا (عرض فوري عند إضافة إعلان جديد، دون انتظار نافذة الدورة)
 function computeDesiredTickerMode(){
   if(!state.announcements || state.announcements.length===0) return "normal";
@@ -1733,6 +1762,7 @@ function measureAndApplyTickerSpeed(groupA, track, attemptsLeft){
   const speedPxPerSec = 26;
   const duration = Math.max(45, (singleWidth||800) / speedPxPerSec);
   track.style.animationDuration = duration + "s";
+  tickerCycleMs = duration * 1000;
   syncTickerHeight();
 }
 function rebuildTicker(){
