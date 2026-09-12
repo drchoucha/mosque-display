@@ -649,8 +649,7 @@
         <div class="fieldRow"><label>العصر</label><input type="number" lang="en" id="gap-asr" min="0" max="60"></div>
         <div class="fieldRow"><label>المغرب</label><input type="number" lang="en" id="gap-maghrib" min="0" max="60"></div>
         <div class="fieldRow"><label>العشاء</label><input type="number" lang="en" id="gap-isha" min="0" max="60"></div>
-        <div class="fieldRow"><label>الجمعة (من الأذان إلى نهاية الصلاة)</label><input type="number" lang="en" id="gap-friday-dhuhr" min="0" max="90"></div>
-        <div class="fieldRow"><span style="font-size:.85rem; color:var(--cream); opacity:.75;">هذا الرقم يمثل المدة الإجمالية من أذان الجمعة إلى نهاية الصلاة (تشمل الانتظار قبل الإقامة ومدة الصلاة نفسها معًا)</span></div>
+        <div class="fieldRow"><span style="font-size:.85rem; color:var(--cream); opacity:.75;">يوم الجمعة: يظهر حديث أبي هريرة تلقائيًا فور الأذان لمدة 25 دقيقة، ثم تُعتّم الشاشة 10 دقائق، ثم تعود شاشة الساعة العادية (بدون عداد تنازلي)</span></div>
 
         <div class="sectionTitle">تعديل يدوي للمواقيت المحسوبة تلقائيًا (بالدقائق، +/-)</div>
         <div class="fieldRow"><span style="font-size:.85rem; color:var(--cream); opacity:.75;">لمطابقة جهاز رسمي في المسجد أو جدول الوزارة المحلي — اضبطها مرة واحدة بمقارنة الوقتين</span></div>
@@ -985,7 +984,7 @@ function defaultState(){
     dateFormat: "dmy", // dmy | mdy | ymd
     alertSound: "tones", // tones | birds | water
     prayerTimes: { fajr:"04:12", dhuhr:"12:45", asr:"16:20", maghrib:"19:05", isha:"20:35" },
-    iqamaGap: { fajr:20, dhuhr:15, asr:15, maghrib:10, isha:15, fridayDhuhr:30 }, // fridayDhuhr: فارق الإقامة الخاص بصلاة الجمعة (30 دقيقة افتراضيًا، قابل للتعديل من لوحة التحكم)
+    iqamaGap: { fajr:20, dhuhr:15, asr:15, maghrib:10, isha:15 }, // مواقيت الجمعة أصبحت ثابتة (FRIDAY_HADITH_MIN / FRIDAY_DIM_MIN)
     prayerDuration: 8,
     location: { wilayaIndex:2, lat:33.7848, lng:3.1328, tz:1 }, // default: قصر الحيران، ولاية الأغواط
     content: JSON.parse(JSON.stringify(DEFAULT_CONTENT)),
@@ -1253,13 +1252,13 @@ function getEffectivePrayerTimes(date){
   return applyPrayerOffsets(state.prayerTimes);
 }
 
-/* توقيت صلاة الجمعة: نصف الساعة (القابلة للتعديل) هي المدة الإجمالية من أذان الجمعة
-   إلى نهاية الصلاة، وتشمل: مدة الأذان (لحظة الانطلاق) + مدة الانتظار قبل الإقامة + مدة الصلاة نفسها.
-   فمدة الانتظار = المدة الإجمالية - مدة الصلاة (بحد أدنى صفر) */
+/* توقيت صلاة الجمعة: فور الأذان يظهر حديث أبي هريرة (خطبة الجمعة) بملء الشاشة لمدة 25 دقيقة ثابتة
+   (بلا عداد تنازلي)، ثم تُعتّم الشاشة لمدة 10 دقائق ثابتة (فترة الصلاة)، ثم تعود شاشة الساعة العادية */
+const FRIDAY_HADITH_MIN = 25; // مدة عرض حديث أبي هريرة مباشرة بعد الأذان
+const FRIDAY_DIM_MIN = 10;    // مدة تعتيم الشاشة بعد الحديث
 function getFridayJumuahTiming(adhan){
-  const totalMin = state.iqamaGap.fridayDhuhr||30;
-  const prayerMin = state.prayerDuration||8;
-  const waitMin = Math.max(0, totalMin - prayerMin);
+  const waitMin = FRIDAY_HADITH_MIN;
+  const prayerMin = FRIDAY_DIM_MIN;
   const iqama = new Date(adhan.getTime() + waitMin*60000);
   const end = new Date(iqama.getTime() + prayerMin*60000);
   return { waitMin, prayerMin, iqama, end };
@@ -1334,6 +1333,7 @@ let adhanFlashUntil = 0; // طابع زمني (ms): إلى متى يستمر و�
 let adhkarUntil = 0;     // طابع زمني (ms): إلى متى تستمر شاشة أذكار ما بعد الصلاة
 let adhkarStart = 0;     // متى بدأت شاشة الأذكار (لحساب أي ذكر يُعرض الآن)
 let wasInPrayer = false; // لتتبع لحظة انتهاء الصلاة وبدء الأذكار مباشرة
+let wasInPrayerIsFriday = false; // هل الصلاة المنتهية للتو هي صلاة الجمعة (لتفادي عرض الأذكار بعدها)
 let iqamaJustStarted = 0; // طابع زمني: حتى متى تبقى شاشة الإقامة بالرمز فقط (10 ثوانٍ) بدون نص
 let lastPrayerKey = null; // آخر صلاة كانت قيد الإقامة، لمعرفة إن كانت الفجر أو المغرب عند عرض الأذكار
 const ADHKAR_PAGE_MS = 26000; // مدة عرض كل ذكر (ثانية تقريبًا)
@@ -1413,28 +1413,25 @@ function updatePrayers(now){
     if(now>=adhan && now<iqama){ inIqamaGap=true; gapKey=k; gapIqamaDate=iqama; gapAdhanDate=adhan; }
   }
 
-  // خطبة الجمعة: النصف ساعة تشمل مدة الأذان (لحظة الانطلاق) ومدة الانتظار ومدة الصلاة معًا.
-  // يظهر حديث أبي هريرة رضي الله عنه بملء الشاشة خلال العشرين دقيقة الأخيرة من فترة الانتظار (قبل الإقامة)،
-  // أو طوال فترة الانتظار إن كانت أقصر من عشرين دقيقة. باقي الأيام لا يوجد تغيير: الشاشة تعتم بعد الإقامة فقط
+  // خطبة الجمعة: فور انتهاء وميض الأذان يظهر حديث أبي هريرة رضي الله عنه بملء الشاشة مباشرة،
+  // ويبقى طوال فترة الانتظار كاملة (25 دقيقة)، بلا عداد تنازلي وبلا تذكير دعاء بينهما.
+  // باقي الأيام لا يوجد تغيير: الشاشة تعتم بعد الإقامة فقط
   const isFridayKhutbahGap = inIqamaGap && gapKey==="dhuhr" && gapAdhanDate && gapAdhanDate.getDay()===5;
-  const khutbahReminderStart = isFridayKhutbahGap && gapIqamaDate && gapAdhanDate
-    ? new Date(Math.max(gapAdhanDate.getTime(), gapIqamaDate.getTime()-20*60000))
-    : null;
+  const khutbahReminderStart = isFridayKhutbahGap ? gapAdhanDate : null;
   const inKhutbahReminder = isFridayKhutbahGap && khutbahReminderStart && now >= khutbahReminderStart;
 
   // تذكير "الدعاء بين الأذان والإقامة": يظهر بملء الشاشة لمدة دقيقة واحدة فور انتهاء وميض الأذان
-  // (20 ثانية)، لكل الصلوات دون استثناء، بشرط توفر وقت كافٍ قبل الإقامة ودون تعارض مع خطبة الجمعة
+  // (20 ثانية)، لكل الصلوات ما عدا صلاة الجمعة (تُستبدل فيها مباشرة بحديث أبي هريرة أعلاه)
   const DUA_REMINDER_DELAY_MS = 20*1000;   // يبدأ فور انتهاء وميض الأذان
   const DUA_REMINDER_DURATION_MS = 60*1000; // يستمر دقيقة واحدة كاملة
-  const duaReminderStart = inIqamaGap && gapAdhanDate
+  const duaReminderStart = inIqamaGap && !isFridayKhutbahGap && gapAdhanDate
     ? new Date(gapAdhanDate.getTime() + DUA_REMINDER_DELAY_MS)
     : null;
   const duaReminderHardEnd = new Date(Math.min(
     duaReminderStart ? duaReminderStart.getTime() + DUA_REMINDER_DURATION_MS : 0,
-    gapIqamaDate ? gapIqamaDate.getTime() : Infinity,
-    khutbahReminderStart ? khutbahReminderStart.getTime() : Infinity
+    gapIqamaDate ? gapIqamaDate.getTime() : Infinity
   ));
-  const inDuaReminder = inIqamaGap && duaReminderStart && now >= duaReminderStart && now < duaReminderHardEnd;
+  const inDuaReminder = inIqamaGap && !isFridayKhutbahGap && duaReminderStart && now >= duaReminderStart && now < duaReminderHardEnd;
 
   blackout.classList.toggle("show", inPrayer);
   if(inPrayer) lastPrayerKey = inPrayerKey;
@@ -1461,6 +1458,7 @@ function updatePrayers(now){
     document.getElementById("textSlide").classList.remove("show","slide-ayah","slide-hadith");
   }
   wasInPrayer = inPrayer;
+  wasInPrayerIsFriday = inPrayerIsFriday;
 
   const adhkarFull = document.getElementById("adhkarFull");
   const showAdhkar = Date.now() < adhkarUntil && !inPrayer && !inAdhanFlash;
@@ -2512,7 +2510,6 @@ function populateAdminFromState(){
   document.getElementById("gap-asr").value = state.iqamaGap.asr;
   document.getElementById("gap-maghrib").value = state.iqamaGap.maghrib;
   document.getElementById("gap-isha").value = state.iqamaGap.isha;
-  document.getElementById("gap-friday-dhuhr").value = state.iqamaGap.fridayDhuhr||30;
 
   document.getElementById("off-fajr").value = state.prayerOffsets.fajr;
   document.getElementById("off-sunrise").value = state.prayerOffsets.sunrise||0;
@@ -2557,7 +2554,6 @@ document.getElementById("saveBtn").addEventListener("click", ()=>{
     asr: Number(document.getElementById("gap-asr").value)||0,
     maghrib: Number(document.getElementById("gap-maghrib").value)||0,
     isha: Number(document.getElementById("gap-isha").value)||0,
-    fridayDhuhr: Number(document.getElementById("gap-friday-dhuhr").value)||30,
   };
   state.prayerOffsets = {
     fajr: Number(document.getElementById("off-fajr").value)||0,
