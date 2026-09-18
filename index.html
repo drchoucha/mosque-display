@@ -346,6 +346,10 @@
     background:rgba(201,162,39,0.15); border:1px solid var(--gold); color:var(--gold-light); font-size:1.5rem;
     cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:0.35; transition:opacity .3s;}
   #gearBtn:hover{opacity:1;}
+  #gearBtn:focus{opacity:1; outline:3px solid var(--gold-light); outline-offset:3px;}
+  /* حلقة تركيز واضحة للتحكم بالريموت (أسهم + OK) على شاشات التلفاز */
+  #adminOverlay button:focus, #adminOverlay input:focus, #adminOverlay select:focus, #adminOverlay textarea:focus, #saveBar button:focus{
+    outline:3px solid var(--gold-light); outline-offset:2px;}
 
   #devCredit{position:absolute; bottom:78px; right:20px; z-index:25; font-size:0.62rem;
     color:var(--gold-light); opacity:0.45; letter-spacing:0.4px; pointer-events:none;}
@@ -2174,6 +2178,98 @@ document.addEventListener("keydown", (e)=>{
     rebuildTicker();
   }
 });
+
+/* ============================================================
+   التحكم بالريموت (أسهم + OK) على أجهزة التلفاز / Android TV
+   WebView داخل التطبيق لا يفعّل التنقل المكاني بين العناصر افتراضيًا،
+   فلا شيء يستقبل التركيز ويبدو زر ⚙ "مقفلًا". هنا ننفّذ التنقل يدويًا:
+   - أول ضغطة على أي سهم أو OK (واللوحة مغلقة) تركّز زر ⚙، والضغطة التالية على OK تفتح اللوحة
+   - داخل اللوحة تنتقل الأسهم إلى أقرب عنصر في اتجاهها، وOK ينفّذ الزر، وEscape/Backspace يغلق
+   ============================================================ */
+const DPAD_KEYS = { ArrowUp:"U", ArrowDown:"D", ArrowLeft:"L", ArrowRight:"R" };
+function dpadFocusables(){
+  const roots = [adminOverlay, saveBar].filter(el=>el && el.classList.contains("show"));
+  const sel = 'button, input:not([type=hidden]), select, textarea, a[href], [tabindex]:not([tabindex="-1"])';
+  const out = [];
+  roots.forEach(root=>{
+    root.querySelectorAll(sel).forEach(el=>{
+      if(el.disabled) return;
+      const r = el.getBoundingClientRect();
+      if(r.width < 2 || r.height < 2) return;
+      const cs = getComputedStyle(el);
+      if(cs.visibility === "hidden" || cs.display === "none") return;
+      out.push(el);
+    });
+  });
+  return out;
+}
+function dpadMove(dir){
+  const list = dpadFocusables();
+  if(!list.length) return;
+  const cur = document.activeElement && list.includes(document.activeElement) ? document.activeElement : null;
+  if(!cur){ list[0].focus(); return; }
+  const cr = cur.getBoundingClientRect();
+  const cx = cr.left + cr.width/2, cy = cr.top + cr.height/2;
+  let best = null, bestScore = Infinity;
+  list.forEach(el=>{
+    if(el === cur) return;
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width/2, y = r.top + r.height/2;
+    const dx = x - cx, dy = y - cy;
+    let main, cross;
+    if(dir === "R"){ main = dx; cross = Math.abs(dy); }
+    else if(dir === "L"){ main = -dx; cross = Math.abs(dy); }
+    else if(dir === "D"){ main = dy; cross = Math.abs(dx); }
+    else { main = -dy; cross = Math.abs(dx); }
+    if(main <= 1) return;
+    const score = main + cross*2.5;
+    if(score < bestScore){ bestScore = score; best = el; }
+  });
+  if(best){
+    best.focus();
+    try{ best.scrollIntoView({ block:"nearest", inline:"nearest" }); }catch(e){}
+  }
+}
+document.addEventListener("keydown", (e)=>{
+  const open = adminOverlay.classList.contains("show");
+  const k = e.key;
+  const isOk = (k === "Enter" || k === "Select" || k === "MediaPlayPause" || k === "ContextMenu" || k === "Menu");
+  if(!open){
+    // اللوحة مغلقة: أي سهم/OK يركّز زر ⚙ أولًا، ثم OK يفتحه
+    if(DPAD_KEYS[k] || isOk){
+      if(document.activeElement !== gearBtn){
+        gearBtn.focus();
+        e.preventDefault();
+        return;
+      }
+      if(isOk){
+        e.preventDefault();
+        gearBtn.click();
+        setTimeout(()=>{ const f = dpadFocusables(); if(f.length) f[0].focus(); }, 60);
+      }
+    }
+    return;
+  }
+  // اللوحة مفتوحة
+  if(k === "Backspace" && !/^(INPUT|TEXTAREA)$/.test((document.activeElement||{}).tagName || "")){
+    e.preventDefault();
+    adminOverlay.classList.remove("show");
+    saveBar.classList.remove("show");
+    rebuildTicker();
+    gearBtn.focus();
+    return;
+  }
+  const dir = DPAD_KEYS[k];
+  if(!dir) return;
+  const t = document.activeElement || {};
+  const tag = t.tagName || "";
+  const type = (t.type || "").toLowerCase();
+  const isText = tag === "TEXTAREA" || (tag === "INPUT" && /^(text|search|number|time|date|email|url|tel|password)$/.test(type));
+  if(tag === "SELECT" && (dir === "U" || dir === "D")) return;   // اترك تغيير الاختيار الأصلي
+  if(isText && (dir === "L" || dir === "R")) return;              // اترك تحريك المؤشر داخل النص
+  e.preventDefault();
+  dpadMove(dir);
+}, true);
 
 document.querySelectorAll(".tabBtn").forEach(btn=>{
   btn.addEventListener("click", ()=>{
